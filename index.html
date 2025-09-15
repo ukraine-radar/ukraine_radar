@@ -556,7 +556,7 @@
                 </div>
                 <div class="form-group">
                     <label for="targetSpeed">Швидкість (км/год):</label>
-                    <input type="number" id="targetSpeed" value="150" min="0" max="10000">
+                    <input type="number" id="targetSpeed" value="150" min="0" max="30000">
                 </div>
                 <div class="form-group">
                     <label for="targetCourse">Курс (0-360°):</label>
@@ -568,7 +568,7 @@
             </div>
 
             <div class="panel-section">
-                <h2><i class="fas fa-bullseye"></i>Цілі</h2>
+                <h2><i class="fas fa-bullse-eye"></i>Цілі</h2>
                 <div class="targets-list" id="targetsList">
                     <!-- Список целей будет добавляться динамически -->
                 </div>
@@ -720,7 +720,7 @@ let markerCluster;
 let lastStatsUpdate = Date.now();
 let lastSyncTargets = '';
 let lastSyncDeleted = '';
-let pausedTargets = new Set();
+let pausedTargets = new Set(); // ⭐ НОВАЯ ПЕРЕМЕННАЯ - для временной остановки целей
 
 // ВАШІ НАЛАШТУВАННЯ FIREBASE
 const firebaseConfig = {
@@ -823,10 +823,6 @@ function initFirebase() {
         isOnline = true;
         console.log("Firebase успішно підключено!");
         setupRealtimeListeners();
-        
-        // Принудительная загрузка при подключении
-        loadFromFirebase();
-        
     } catch (error) {
         console.log("Помилка підключення до Firebase, використовуємо офлайн-режим:", error);
         isOnline = false;
@@ -857,7 +853,7 @@ function startAutoSync() {
     lastSyncDeleted = JSON.stringify(Array.from(deletedTargets));
     
     syncInterval = setInterval(function() {
-        if (!isOnline) return;
+        if (!isOnline || isSyncing) return;
         
         const currentTargets = JSON.stringify(targets);
         const currentDeleted = JSON.stringify(Array.from(deletedTargets));
@@ -869,8 +865,8 @@ function startAutoSync() {
             lastSyncDeleted = currentDeleted;
         }
         
-        // ВСЕГДА загружаем обновления каждые 3 секунды
-        if (Date.now() - lastSyncTime > 3000) {
+        // Загружаем обновления реже - каждые 5 секунд
+        if (Date.now() - lastSyncTime > 5000) {
             loadFromFirebase();
             lastSyncTime = Date.now();
         }
@@ -884,7 +880,8 @@ function debouncedSave() {
         saveTargets();
     }, 1000);
 }
-        // Настройка слушателей Firebase
+
+// Настройка слушателей Firebase
 function setupRealtimeListeners() {
     if (!isOnline) return;
     
@@ -898,12 +895,14 @@ function setupRealtimeListeners() {
         targetsRef.on('value', (snapshot) => {
             const firebaseTargets = snapshot.val() || {};
             
-            // ВСЕГДА обрабатываем входящие данные, даже если isSyncing = true
+            // Игнорируем собственные изменения
+            if (isSyncing) {
+                isSyncing = false;
+                return;
+            }
+            
             console.log("Отримано оновлення з Firebase");
             mergeTargetsFromFirebase(firebaseTargets);
-            
-            // Сбрасываем флаг после обработки
-            isSyncing = false;
         });
         
         // Слушатель удаленных целей
@@ -966,7 +965,7 @@ function setupRealtimeListeners() {
         
         userRef.onDisconnect().remove();
         
-        usersRef.on('value', (snapshot) => {
+                usersRef.on('value', (snapshot) => {
             const users = snapshot.val() || {};
             const activeUsers = Object.values(users).filter(user => 
                 user.connected && Date.now() - user.lastSeen < 30000
@@ -986,35 +985,29 @@ function loadFromFirebase() {
     if (!isOnline) return;
     
     try {
-        isSyncing = true; // Устанавливаем флаг перед загрузкой
-        
         const db = firebase.database();
         const targetsRef = db.ref('targets');
         const deletedRef = db.ref('deletedTargets');
         const historyRef = db.ref('targetHistory');
         
-        // Загружаем все данные параллельно
-        Promise.all([
-            targetsRef.once('value'),
-            deletedRef.once('value'),
-            historyRef.once('value')
-        ]).then(([targetsSnapshot, deletedSnapshot, historySnapshot]) => {
-            
-            const firebaseTargets = targetsSnapshot.val() || {};
-            const firebaseDeleted = deletedSnapshot.val() || [];
-            const firebaseHistory = historySnapshot.val() || {};
-            
-            console.log("Завантажено дані з Firebase");
-            
-            // Обрабатываем удаленные цели
+        targetsRef.once('value').then((snapshot) => {
+            const firebaseTargets = snapshot.val() || {};
+            console.log("Завантажено цілі з Firebase");
+            mergeTargetsFromFirebase(firebaseTargets);
+        });
+        
+        deletedRef.once('value').then((snapshot) => {
+            const firebaseDeleted = snapshot.val() || [];
             firebaseDeleted.forEach(id => {
                 if (!deletedTargets.has(id)) {
                     deletedTargets.add(id);
                 }
             });
-            
-            // Обновляем цели
-            mergeTargetsFromFirebase(firebaseTargets);
+        });
+        
+        historyRef.once('value').then((snapshot) => {
+            const firebaseHistory = snapshot.val() || {};
+            console.log("Завантажено історію траєкторій з Firebase");
             
             // Обновляем историю траекторий
             Object.keys(firebaseHistory).forEach(targetId => {
@@ -1027,16 +1020,9 @@ function loadFromFirebase() {
             if (showTrajectories) {
                 updateTrajectories();
             }
-            
-        }).catch(error => {
-            console.error('Помилка завантаження з Firebase:', error);
-        }).finally(() => {
-            isSyncing = false;
         });
-        
     } catch (error) {
         console.error('Помилка завантаження з Firebase:', error);
-        isSyncing = false;
     }
 }
 
@@ -1160,8 +1146,8 @@ function addTargetAtPosition(latlng) {
         return;
     }
     
-    if (isNaN(speed) || speed < 0 || speed > 10000) {
-        alert('Швидкість повинна бути від 0 до 10000 км/год');
+    if (isNaN(speed) || speed < 0 || speed > 30000) {
+        alert('Швидкість повинна бути від 0 до 30000 км/год');
         return;
     }
     
@@ -1318,14 +1304,14 @@ function addTargetToMap(target) {
     marker.addTo(markerCluster);
     markers[target.id] = marker;
 
-    // ОБРАБОТЧИКИ ДЛЯ ОСТАНОВКИ ПРИ ОТКРЫТИИ POPUP
-    marker.on('popupopen', function() {
-        pausedTargets.add(target.id);
-    });
-    
-    marker.on('popupclose', function() {
-        pausedTargets.delete(target.id);
-    });
+    // ⭐ ОБРАБОТЧИКИ ДЛЯ ОСТАНОВКИ ПРИ ОТКРЫТИИ POPUP
+        marker.on('popupopen', function() {
+            pausedTargets.add(target.id);
+        });
+        
+        marker.on('popupclose', function() {
+            pausedTargets.delete(target.id);
+        });
     
     // Додаємо траєкторію (всегда, не зависимо от showTrajectories)
     addTrajectory(target);
@@ -1412,7 +1398,7 @@ function removeTrajectory(targetId) {
         map.removeLayer(polylines[targetId]);
         delete polylines[targetId];
     }
-        }
+}
         // Переміщення цілей
 function moveTargets() {
     const now = Date.now();
@@ -1420,7 +1406,7 @@ function moveTargets() {
     lastUpdateTime = now;
     
     targets.forEach(target => {
-        if (deletedTargets.has(target.id) || pausedTargets.has(target.id)) return;
+        if (deletedTargets.has(target.id) || pausedTargets.has(target.id)) return; // ⭐ ОСТАНАВЛИВАЕМ ЦЕЛИ В POPUP
         
         // Переміщення цілі - реалистичная скорость (150 км/ч = 41.67 м/с)
         const distance = (target.speed * 1000 / 3600) * deltaTime; // в метрах
@@ -1475,10 +1461,10 @@ function moveTargets() {
         `Оновлено: ${new Date().toLocaleTimeString()}`;
     
     // Обновляем статистику раз в секунду (без мерцания)
-if (Date.now() - lastStatsUpdate > 1000) {
-    updateStats();
-    lastStatsUpdate = Date.now();
-}
+    if (Date.now() - lastStatsUpdate > 1000) {
+        updateStats();
+        lastStatsUpdate = Date.now();
+    }
 }
 
 // Обновление кластеризации
@@ -1854,218 +1840,219 @@ document.getElementById('importFile').addEventListener('change', function(event)
         try {
             const importedTargets = JSON.parse(e.target.result);
             
-            if (Array.isArray(importedTargets)) {
-                // Додати імпортовані цілі
-                importedTargets.forEach(target => {
-                    // Генеруємо новий ID для уникнення конфліктів
-                    target.id = Date.now().toString() + '-' + Math.random().toString(36).substr(2, 9);
-                    target.createdAt = Date.now();
-                    target.updatedAt = Date.now();
-                    target.createdBy = userSessionId;
-                    targets.push(target);
-                });
-                
-                updateMap();
-                saveTargets();
-                updateStats();
-                updateTargetsList();
-                
-                alert(`Успішно імпортовано ${importedTargets.length} цілей`);
-            } else {
-                alert('Невірний формат файлу');
-            }
-        } catch (error) {
-            console.error('Помилка імпорту:', error);
-            alert('Помилка при імпорті файлу');
-        }
-    };
-    reader.readAsText(file);
-    
-    // Очистити input
-    event.target.value = '';
-});
-
-// Переключити панель
-function togglePanel() {
-    const panel = document.getElementById('sidePanel');
-    panel.classList.toggle('collapsed');
-    isPanelExpanded = !isPanelExpanded;
-    
-    const button = document.querySelector('.toggle-panel-btn');
-    button.innerHTML = isPanelExpanded ? 
-        '<i class="fas fa-eye-slash"></i><span>Сховати</span>' : 
-        '<i class="fas fa-eye"></i><span>Панель</span>';
-}
-
-// Показати модальне вікно логіну
-function showLoginModal() {
-    document.getElementById('loginModal').style.display = 'block';
-}
-
-// Закрити модальне вікно логіну
-function closeLoginModal() {
-    document.getElementById('loginModal').style.display = 'none';
-    document.getElementById('loginUsername').value = '';
-    document.getElementById('loginPassword').value = '';
-}
-
-// Закрити модальне вікно редагування
-function closeEditModal() {
-    document.getElementById('editModal').style.display = 'none';
-    currentEditTargetId = null;
-}
-
-// Спроба входу
-function attemptLogin() {
-    const username = document.getElementById('loginUsername').value;
-    const password = document.getElementById('loginPassword').value;
-    
-    // Перевірка логіну та паролю
-    if (username === 'admin123450' && password === 'password123450') {
-        isAdmin = true;
-        closeLoginModal();
-        updateUIForUserRole();
-        alert('Успішний вхід як адміністратор');
-    } else {
-        alert('Невірний логін або пароль');
-    }
-}
-
-// Вийти
-function logout() {
-    isAdmin = false;
-    updateUIForUserRole();
-    alert('Вихід виконано');
-}
-
-// Оновити UI відповідно до ролі користувача
-function updateUIForUserRole() {
-    const loginBtn = document.querySelector('.login-btn');
-    const logoutBtn = document.getElementById('logoutBtn');
-    const adminElements = document.querySelectorAll('.admin-only');
-    
-    if (isAdmin) {
-        loginBtn.style.display = 'none';
-        logoutBtn.style.display = 'block';
-        adminElements.forEach(el => el.style.display = 'block');
-    } else {
-        loginBtn.style.display = 'block';
-        logoutBtn.style.display = 'none';
-        adminElements.forEach(el => el.style.display = 'none');
-    }
-}
-
-// Налаштування обробників подій
-function setupEventListeners() {
-    // Закриття модальних вікон по кліку на затемнений фон
-    const modals = document.querySelectorAll('.modal');
-    modals.forEach(modal => {
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-                isAddTargetMode = false;
-                isCourseSelectionMode = false;
-            }
-        });
-    });
-    
-    // Обробка клавіші ESC
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Escape') {
-            closeLoginModal();
-            closeEditModal();
-            cancelCourseSelection();
-            isAddTargetMode = false;
-        }
-    });
-    
-    // Автозаповнення назви цілі
-    document.getElementById('targetName').addEventListener('focus', function() {
-        if (!this.value) {
-            this.value =     if (!this.value) {
-        this.value = 'Ціль-' + (targets.length + 1);
-    }
-});
-
-// Додаємо обробник для імпорту файлів
-document.getElementById('importFile').addEventListener('change', function(event) {
-    const file = event.target.files[0];
-    if (file) {
-        const reader = new FileReader();
-        reader.onload = function(e) {
-            try {
-                const importedData = JSON.parse(e.target.result);
-                if (Array.isArray(importedData)) {
-                    // Обробка імпортованих даних
-                    importedData.forEach(target => {
-                        target.id = Date.now().toString() + '-' + Math.random().toString(36).substr(2, 5);
+                            if (Array.isArray(importedTargets)) {
+                    // Додати імпортовані цілі
+                    importedTargets.forEach(target => {
+                        // Генеруємо новий ID для уникнення конфліктів
+                        target.id = Date.now().toString() + '-' + Math.random().toString(36).substr(2, 9);
                         target.createdAt = Date.now();
                         target.updatedAt = Date.now();
                         target.createdBy = userSessionId;
                         targets.push(target);
                     });
+                    
                     updateMap();
                     saveTargets();
                     updateStats();
                     updateTargetsList();
-                    alert('Дані успішно імпортовані!');
+                    
+                    alert(`Успішно імпортовано ${importedTargets.length} цілей`);
+                } else {
+                    alert('Невірний формат файлу');
                 }
             } catch (error) {
-                alert('Помилка при імпорті файлу: ' + error.message);
+                console.error('Помилка імпорту:', error);
+                alert('Помилка при імпорті файлу');
             }
         };
         reader.readAsText(file);
+        
+        // Очистити input
+        event.target.value = '';
+    });
+
+    // Переключити панель
+    function togglePanel() {
+        const panel = document.getElementById('sidePanel');
+        panel.classList.toggle('collapsed');
+        isPanelExpanded = !isPanelExpanded;
+        
+        const button = document.querySelector('.toggle-panel-btn');
+        button.innerHTML = isPanelExpanded ? 
+            '<i class="fas fa-eye-slash"></i><span>Сховати</span>' : 
+            '<i class="fas fa-eye"></i><span>Панель</span>';
     }
-});
 
-console.log("Обробники подій успішно налаштовані");
-}
+    // Показати модальне вікно логіну
+    function showLoginModal() {
+        document.getElementById('loginModal').style.display = 'block';
+    }
 
-// Оновити карту
-function updateMap() {
-    // Очистити всі маркери
-    markerCluster.clearLayers();
-    markers = {};
-    
-    // Очистити всі траєкторії
-    Object.values(polylines).forEach(polyline => {
-        map.removeLayer(polyline);
-    });
-    polylines = {};
-    
-    // Додати цілі на карту (кроме удаленных)
-    targets.forEach(target => {
-        if (!deletedTargets.has(target.id)) {
-            addTargetToMap(target);
+    // Закрити модальне вікно логіну
+    function closeLoginModal() {
+        document.getElementById('loginModal').style.display = 'none';
+        document.getElementById('loginUsername').value = '';
+        document.getElementById('loginPassword').value = '';
+    }
+
+    // Закрити модальне вікно редагування
+    function closeEditModal() {
+        document.getElementById('editModal').style.display = 'none';
+        currentEditTargetId = null;
+    }
+
+    // Спроба входу
+    function attemptLogin() {
+        const username = document.getElementById('loginUsername').value;
+        const password = document.getElementById('loginPassword').value;
+        
+        // Перевірка логіну та паролю
+        if (username === 'admin123450' && password === 'password123450') {
+            isAdmin = true;
+            closeLoginModal();
+            updateUIForUserRole();
+            alert('Успішний вхід як адміністратор');
+        } else {
+            alert('Невірний логін або пароль');
         }
+    }
+
+    // Вийти
+    function logout() {
+        isAdmin = false;
+        updateUIForUserRole();
+        alert('Вихід виконано');
+    }
+
+    // Оновити UI відповідно до ролі користувача
+    function updateUIForUserRole() {
+        const loginBtn = document.querySelector('.login-btn');
+        const logoutBtn = document.getElementById('logoutBtn');
+        const adminElements = document.querySelectorAll('.admin-only');
+        
+        if (isAdmin) {
+            loginBtn.style.display = 'none';
+            logoutBtn.style.display = 'block';
+            adminElements.forEach(el => el.style.display = 'block');
+        } else {
+            loginBtn.style.display = 'block';
+            logoutBtn.style.display = 'none';
+            adminElements.forEach(el => el.style.display = 'none');
+        }
+    }
+
+    // Налаштування обробників подій
+    function setupEventListeners() {
+        // Закриття модальних вікон по кліку на затемнений фон
+        const modals = document.querySelectorAll('.modal');
+        modals.forEach(modal => {
+            modal.addEventListener('click', function(e) {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                    isAddTargetMode = false;
+                    isCourseSelectionMode = false;
+                }
+            });
+        });
+        
+        // Обробка клавіші ESC
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') {
+                closeLoginModal();
+                closeEditModal();
+                cancelCourseSelection();
+                isAddTargetMode = false;
+            }
+        });
+        
+        // Автозаповнення назви цілі
+        document.getElementById('targetName').addEventListener('focus', function() {
+            if (!this.value) {
+                this.value = 'Ціль-' + (targets.length + 1);
+            }
+        });
+
+        // Додаємо обробник для імпорту файлів
+        document.getElementById('importFile').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        const importedData = JSON.parse(e.target.result);
+                        if (Array.isArray(importedData)) {
+                            // Обробка імпортованих даних
+                            importedData.forEach(target => {
+                                target.id = Date.now().toString() + '-' + Math.random().toString(36).substr(2, 5);
+                                target.createdAt = Date.now();
+                                target.updatedAt = Date.now();
+                                target.createdBy = userSessionId;
+                                targets.push(target);
+                            });
+                            updateMap();
+                            saveTargets();
+                            updateStats();
+                            updateTargetsList();
+                            alert('Дані успішно імпортовані!');
+                        }
+                    } catch (error) {
+                        alert('Помилка при імпорті файлу: ' + error.message);
+                    }
+                };
+                reader.readAsText(file);
+            }
+        });
+
+        console.log("Обробники подій успішно налаштовані");
+    }
+
+    // Оновити карту
+    function updateMap() {
+        // Очистити всі маркери
+        markerCluster.clearLayers();
+        markers = {};
+        
+        // Очистити всі траєкторії
+        Object.values(polylines).forEach(polyline => {
+            map.removeLayer(polyline);
+        });
+        polylines = {};
+        
+        // Додати цілі на карту (кроме удаленных)
+        targets.forEach(target => {
+            if (!deletedTargets.has(target.id)) {
+                addTargetToMap(target);
+            }
+        });
+    }
+
+    // Ініціалізація при завантаженні сторінки
+    document.addEventListener('DOMContentLoaded', function() {
+        initApp();
     });
-}
 
-// Ініціалізація при завантаженні сторінки
-document.addEventListener('DOMContentLoaded', function() {
-    initApp();
-});
-
-// Глобальні функції для виклику з HTML
-window.addTargetAtCenter = addTargetAtCenter;
-window.toggleTrajectories = toggleTrajectories;
-window.clearAllTargets = clearAllTargets;
-window.exportTargets = exportTargets;
-window.importTargets = importTargets;
-window.togglePanel = togglePanel;
-window.showLoginModal = showLoginModal;
-window.closeLoginModal = closeLoginModal;
-window.attemptLogin = attemptLogin;
-window.logout = logout;
-window.enableAddTargetMode = enableAddTargetMode;
-window.editTarget = editTarget;
-window.deleteTarget = deleteTarget;
-window.saveTargetEdit = saveTargetEdit;
-window.closeEditModal = closeEditModal;
-window.showCourseSelectionModal = showCourseSelectionModal;
-window.confirmCourseSelection = confirmCourseSelection;
-window.cancelCourseSelection = cancelCourseSelection;
-window.setTargetCourseFromMap = setTargetCourseFromMap;
+    // Глобальні функції для виклику з HTML
+    window.addTargetAtCenter = addTargetAtCenter;
+    window.toggleTrajectories = toggleTrajectories;
+    window.clearAllTargets = clearAllTargets;
+    window.exportTargets = exportTargets;
+    window.importTargets = importTargets;
+    window.togglePanel = togglePanel;
+    window.showLoginModal = showLoginModal;
+    window.closeLoginModal = closeLoginModal;
+    window.attemptLogin = attemptLogin;
+    window.logout = logout;
+    window.enableAddTargetMode = enableAddTargetMode;
+    window.editTarget = editTarget;
+    window.deleteTarget = deleteTarget;
+    window.saveTargetEdit = saveTargetEdit;
+    window.closeEditModal = closeEditModal;
+    window.showCourseSelectionModal = showCourseSelectionModal;
+    window.confirmCourseSelection = confirmCourseSelection;
+    window.cancelCourseSelection = cancelCourseSelection;
+    window.setTargetCourseFromMap = setTargetCourseFromMap;
 </script>
 </body>
 </html>
+        
+    
