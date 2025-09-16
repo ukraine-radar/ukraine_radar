@@ -1807,13 +1807,16 @@ function updateStatus() {
     }
 }
 
-// Зберегти цілі
+// Зберегти цілі - ДОБАВЛЕНО ЛОГИРОВАНИЕ
 function saveTargets() {
     localStorage.setItem('deletedTargets', JSON.stringify(Array.from(deletedTargets)));
     saveTargetsToLocalStorage();
     
     if (isOnline) {
+        console.log("Збереження цілей та синхронізація з Firebase...");
         syncWithFirebase();
+    } else {
+        console.log("Збереження цілей локально (офлайн режим)");
     }
 }
 
