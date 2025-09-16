@@ -7,25 +7,26 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" 
       integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" 
       crossorigin="anonymous"/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.css" 
       crossorigin="anonymous"/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster@1.4.1/dist/MarkerCluster.Default.css" 
       crossorigin="anonymous"/>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" 
       integrity="sha512-iecdLmaskl7CVkqkXNQ/ZH/XLlvWZOJyj7Yy7tcenmpD1ypASozpmT/E0iPtmFIB46ZmdtAc9eNBvH0H/ZpiBw==" 
       crossorigin="anonymous" referrerpolicy="no-referrer"/>
-<link rel="stylesheet" href="https://unpkg.com/leaflet.contextmenu@1.4.0/dist/leaflet.contextmenu.css" 
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.contextmenu@1.4.0/dist/leaflet.contextmenu.css" 
       crossorigin="anonymous"/>
 
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
-        integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
-        crossorigin="anonymous"></script>
-<script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"
-        crossorigin="anonymous"></script>
-<script src="https://unpkg.com/leaflet.contextmenu@1.4.0/dist/leaflet.contextmenu.min.js"
-        crossorigin="anonymous"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+            integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
+            crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet.markercluster@1.4.1/dist/leaflet.markercluster.js"
+            crossorigin="anonymous"></script>
+    <script src="https://unpkg.com/leaflet.contextmenu@1.4.0/dist/leaflet.contextmenu.min.js"
+            crossorigin="anonymous"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    
     <style>
         * {
             margin: 0;
@@ -114,12 +115,6 @@
             position: relative;
         }
 
-        /* Скрываем кнопку добавления цели на карте */
-        .add-target-button {
-            display: none;
-        }
-
-        /* Прицел по центру */
         .crosshair {
             position: absolute;
             top: 50%;
@@ -217,317 +212,296 @@
         }
 
         .form-group input:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: #00cec9;
-    box-shadow: 0 0 10px rgba(0, 206, 201, 0.5);
-}
+        .form-group select:focus {
+            outline: none;
+            border-color: #00cec9;
+            box-shadow: 0 0 10px rgba(0, 206, 201, 0.5);
+        }
 
-.btn {
-    background: linear-gradient(90deg, #0984e3 0%, #00cec9 100%);
-    border: none;
-    color: white;
-    padding: 10px 15px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: bold;
-    transition: all 0.3s ease;
-    width: 100%;
-    margin-top: 5px;
-    font-size: 14px;
-}
+        .btn {
+            background: linear-gradient(90deg, #0984e3 0%, #00cec9 100%);
+            border: none;
+            color: white;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 5px;
+            font-size: 14px;
+        }
 
-.btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(0, 206, 201, 0.4);
-}
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 206, 201, 0.4);
+        }
 
-.btn-danger {
-    background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
-}
+        .btn-danger {
+            background: linear-gradient(90deg, #e74c3c 0%, #c0392b 100%);
+        }
 
-.btn-secondary {
-    background: linear-gradient(90deg, #7f8c8d 0%, #636e72 100%);
-}
+        .btn-secondary {
+            background: linear-gradient(90deg, #7f8c8d 0%, #636e72 100%);
+        }
 
-.btn-margin {
-    margin-top: 10px;
-}
+        .btn-margin {
+            margin-top: 10px;
+        }
 
-.targets-list {
-    max-height: 150px;
-    overflow-y: auto;
-    margin-top: 10px;
-}
+        .targets-list {
+            max-height: 150px;
+            overflow-y: auto;
+            margin-top: 10px;
+        }
 
-.target-item {
-    background: rgba(52, 73, 94, 0.6);
-    padding: 10px;
-    margin-bottom: 8px;
-    border-radius: 6px;
-    border-left: 4px solid #00cec9;
-    transition: all 0.3s ease;
-    cursor: pointer;
-}
+        .target-item {
+            background: rgba(52, 73, 94, 0.6);
+            padding: 10px;
+            margin-bottom: 8px;
+            border-radius: 6px;
+            border-left: 4px solid #00cec9;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
 
-.target-item:hover {
-    background: rgba(52, 73, 94, 0.9);
-    transform: translateX(5px);
-}
+        .target-item:hover {
+            background: rgba(52, 73, 94, 0.9);
+            transform: translateX(5px);
+        }
 
-.target-item h4 {
-    color: #00cec9;
-    margin-bottom: 5px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    font-size: 14px;
-}
+        .target-item h4 {
+            color: #00cec9;
+            margin-bottom: 5px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
 
-.target-item p {
-    color: #dfe6e9;
-    font-size: 12px;
-    margin: 2px 0;
-}
+        .target-item p {
+            color: #dfe6e9;
+            font-size: 12px;
+            margin: 2px 0;
+        }
 
-.target-item .target-actions {
-    display: flex;
-    gap: 8px;
-    margin-top: 8px;
-}
+        .target-item .target-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 8px;
+        }
 
-.target-item .target-actions button {
-    flex: 1;
-    padding: 6px;
-    font-size: 11px;
-}
+        .target-item .target-actions button {
+            flex: 1;
+            padding: 6px;
+            font-size: 11px;
+        }
 
-.stats-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 10px;
-}
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
 
-.stat-card {
-    background: rgba(52, 73, 94, 0.6);
-    padding: 12px;
-    border-radius: 6px;
-    text-align: center;
-    border: 1px solid #34495e;
-}
+        .stat-card {
+            background: rgba(52, 73, 94, 0.6);
+            padding: 12px;
+            border-radius: 6px;
+            text-align: center;
+            border: 1px solid #34495e;
+        }
 
-.stat-card h3 {
-    color: #00cec9;
-    font-size: 20px;
-    margin-bottom: 5px;
-}
+        .stat-card h3 {
+            color: #00cec9;
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
 
-.stat-card p {
-    color: #dfe6e9;
-    font-size: 12px;
-}
+        .stat-card p {
+            color: #dfe6e9;
+            font-size: 12px;
+        }
 
-.status-bar {
-    background: rgba(44, 62, 80, 0.9);
-    padding: 8px 15px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    border-top: 2px solid #00cec9;
-    font-size: 12px;
-    flex-shrink: 0;
-}
+        .status-bar {
+            background: rgba(44, 62, 80, 0.9);
+            padding: 8px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid #00cec9;
+            font-size: 12px;
+            flex-shrink: 0;
+        }
 
-.status-indicator {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
 
-.online-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #00b894;
-    animation: pulse 2s infinite;
-}
+        .online-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00b894;
+            animation: pulse 2s infinite;
+        }
 
-.offline-dot {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: #d63031;
-}
+        .offline-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #d63031;
+        }
 
-@keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.5; }
-    100% { opacity: 1; }
-}
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
 
-.modal {
-    display: none;
-    position: fixed;
-    z-index: 1000;
-    left: 0;
-    top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
-    backdrop-filter: blur(5px);
-}
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+        }
 
-.modal-content {
-    background: linear-gradient(135deg, #2d3436 0%, #2c3e50 100%);
-    margin: 15% auto;
-    padding: 20px;
-    border-radius: 12px;
-    width: 350px;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
-    border: 2px solid #00cec9;
-    position: relative;
-}
+        .modal-content {
+            background: linear-gradient(135deg, #2d3436 0%, #2c3e50 100%);
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 12px;
+            width: 350px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.5);
+            border: 2px solid #00cec9;
+            position: relative;
+        }
 
-.modal-content h3 {
-    color: #00cec9;
-    margin-bottom: 15px;
-    text-align: center;
-    font-size: 18px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-}
+        .modal-content h3 {
+            color: #00cec9;
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
 
-.modal-buttons {
-    display: flex;
-    gap: 12px;
-    margin-top: 15px;
-}
+        .modal-buttons {
+            display: flex;
+            gap: 12px;
+            margin-top: 15px;
+        }
 
-.modal-buttons button {
-    flex: 1;
-    padding: 10px;
-    font-size: 14px;
-    font-weight: bold;
-}
+        .modal-buttons button {
+            flex: 1;
+            padding: 10px;
+            font-size: 14px;
+            font-weight: bold;
+        }
 
-.course-notification {
-    position: fixed;
-    top: 15px;
-    left: 50%;
-    transform: translateX(-50%);
-    background: linear-gradient(90deg, #0984e3 0%, #00cec9 100%);
-    color: white;
-    padding: 12px 20px;
-    border-radius: 6px;
-    z-index: 1001;
-    box-shadow: 0 4px 15px rgba(0, 206, 201, 0.5);
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-weight: bold;
-    font-size: 14px;
-}
+        .png-icon-marker {
+            background: transparent !important;
+            border: none !important;
+        }
 
-/* Стили для поворачивающихся PNG иконок */
-.png-icon-marker {
-    background: transparent !important;
-    border: none !important;
-}
+        .rotatable-png-icon {
+            width: 40px;
+            height: 40px;
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+            transition: transform 0.5s ease;
+            transform-origin: center;
+        }
 
-.rotatable-png-icon {
-    width: 40px;
-    height: 40px;
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
-    transition: transform 0.5s ease;
-    transform-origin: center;
-}
+        .marker-cluster {
+            background: rgba(231, 76, 60, 0.8);
+            border-radius: 50%;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid white;
+            box-shadow: 0 0 15px rgba(231, 76, 60, 0.8);
+        }
 
-/* Стили для кластеров */
-.marker-cluster {
-    background: rgba(231, 76, 60, 0.8);
-    border-radius: 50%;
-    color: white;
-    font-weight: bold;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border: 3px solid white;
-    box-shadow: 0 0 15px rgba(231, 76, 60, 0.8);
-}
+        .marker-cluster-small {
+            width: 40px;
+            height: 40px;
+            font-size: 14px;
+        }
 
-.marker-cluster-small {
-    width: 40px;
-    height: 40px;
-    font-size: 14px;
-}
+        .marker-cluster-medium {
+            width: 50px;
+            height: 50px;
+            font-size: 16px;
+        }
 
-.marker-cluster-medium {
-    width: 50px;
-    height: 50px;
-    font-size: 16px;
-}
+        .marker-cluster-large {
+            width: 60px;
+            height: 60px;
+            font-size: 18px;
+        }
 
-.marker-cluster-large {
-    width: 60px;
-    height: 60px;
-    font-size: 18px;
-}
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 18px;
+                max-width: 40%;
+            }
+            
+            .header-btn {
+                padding: 6px 10px;
+                font-size: 12px;
+            }
+            
+            .panel {
+                height: 280px;
+            }
+            
+            .panel.collapsed {
+                height: 45px;
+            }
+            
+            .modal-content {
+                width: 90%;
+                margin: 20% auto;
+            }
+        }
 
-/* Адаптивность */
-@media (max-width: 768px) {
-    .header h1 {
-        font-size: 18px;
-        max-width: 40%;
-    }
-    
-    .header-btn {
-        padding: 6px 10px;
-        font-size: 12px;
-    }
-    
-    .panel {
-        height: 280px;
-    }
-    
-    .panel.collapsed {
-        height: 45px;
-    }
-    
-    .modal-content {
-        width: 90%;
-        margin: 20% auto;
-    }
-}
-
-@media (max-width: 480px) {
-    .header {
-        padding: 10px;
-    }
-    
-    .header h1 {
-        font-size: 16px;
-        max-width: 35%;
-    }
-    
-    .header-btn {
-        padding: 5px 8px;
-        font-size: 11px;
-    }
-    
-    .header-btn i {
-        margin-right: 0;
-    }
-    
-    .header-btn span {
-        display: none;
-    }
-}
-</style>
+        @media (max-width: 480px) {
+            .header {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 16px;
+                max-width: 35%;
+            }
+            
+            .header-btn {
+                padding: 5px 8px;
+                font-size: 11px;
+            }
+            
+            .header-btn i {
+                margin-right: 0;
+            }
+            
+            .header-btn span {
+                display: none;
+            }
+        }
+    </style>
 </head>
 <body>
 <div class="app-container">
@@ -537,16 +511,11 @@
             <button class="header-btn toggle-panel-btn" onclick="togglePanel()">
                 <i class="fas fa-eye-slash"></i><span>Панель</span>
             </button>
-            <!-- УБРАНЫ КНОПКИ АВТОРИЗАЦИИ -->
         </div>
     </div>
 
     <div class="main-content">
         <div id="map">
-            <!-- Кнопка добавления цели скрыта -->
-            <button class="add-target-button" onclick="enableAddTargetMode()" style="display: none;">
-                <i class="fas fa-plus"></i>Додати ціль
-            </button>
             <div class="crosshair"></div>
         </div>
         <div class="panel" id="sidePanel">
@@ -647,8 +616,6 @@
     </div>
 </div>
 
-<!-- УБРАНО МОДАЛЬНОЕ ОКНО ЛОГИНА -->
-
 <!-- Модальне вікно редагування -->
 <div id="editModal" class="modal">
     <div class="modal-content">
@@ -719,14 +686,14 @@ let lastSyncTime = Date.now();
 let saveTimeout = null;
 let lastUpdateTime = Date.now();
 let animationFrameId = null;
-let targetClusters = {};
 let userSessionId = Math.random().toString(36).substring(2, 11);
 let syncInterval = null;
-let isAddTargetMode = false;
 let popupOpenTargetId = null;
+let deletedTargets = new Set();
 let markerCluster;
 let lastStatsUpdate = Date.now();
 let lastSyncTargets = '';
+let lastSyncDeleted = '';
 let pausedTargets = new Set();
 
 // Новые переменные для функционала стрелок и кластеризации
@@ -770,11 +737,6 @@ function initApp() {
         console.error('Leaflet не завантажився');
         alert('Помилка: Бібліотека карт не завантажилась. Перевірте підключення до інтернету');
         return;
-    }
-    
-    if (typeof firebase === 'undefined') {
-        console.error('Firebase не завантажився');
-        alert('Помилка: Firebase не завантажився. Деякі функції будуть обмежені');
     }
     
     try {
@@ -834,25 +796,24 @@ function initMap() {
                 });
             }
         });
+        map.addLayer(markerCluster);
         
         // Добавляем слои для отдельных маркеров и стрелок
-        individualTargets = L.layerGroup();
-        allArrows = L.layerGroup();
-        
-        // Изначально добавляем только individualTargets (без кластеризации)
         map.addLayer(individualTargets);
         map.addLayer(allArrows);
 
         // Добавляем обработчик клика по карте
         map.on('click', function(e) {
-            if (isAddTargetMode) {
-                addTargetAtPosition(e.latlng);
-                isAddTargetMode = false;
-            } else if (isCourseSelectionMode && selectedTargetForCourse) {
+            if (isCourseSelectionMode && selectedTargetForCourse) {
                 setTargetCourseFromMap(e.latlng);
             } else if (arrowMode) {
                 handleArrowClick(e);
             }
+        });
+
+        // Обновляем кластеризацию при изменении зума
+        map.on('zoomend', function() {
+            updateTargetClusters();
         });
 
         // Обработчик движения мыши для временной линии стрелки
@@ -867,12 +828,6 @@ function initMap() {
         console.error('Помилка ініціалізації карти:', error);
         alert('Помилка створення карти: ' + error.message);
     }
-}
-
-// Включить режим добавления цели
-function enableAddTargetMode() {
-    isAddTargetMode = true;
-    alert('Режим додавання цілі увімкнено. Клацніть по карті, щоб додати ціль');
 }
 
 // Инициализация Firebase
@@ -915,20 +870,23 @@ function startAutoSave() {
 // Оптимизированная синхронизация с Firebase
 function startAutoSync() {
     lastSyncTargets = JSON.stringify(targets);
+    lastSyncDeleted = JSON.stringify(Array.from(deletedTargets));
     
     syncInterval = setInterval(function() {
         if (!isOnline || isSyncing) return;
         
         const currentTargets = JSON.stringify(targets);
+        const currentDeleted = JSON.stringify(Array.from(deletedTargets));
         
         // Синхронизируем только если были изменения
-        if (currentTargets !== lastSyncTargets) {
+        if (currentTargets !== lastSyncTargets || currentDeleted !== lastSyncDeleted) {
             syncWithFirebase();
             lastSyncTargets = currentTargets;
+            lastSyncDeleted = currentDeleted;
         }
         
-        // Загружаем обновления каждые 3 секунды
-        if (Date.now() - lastSyncTime > 3000) {
+        // Загружаем обновления реже - каждые 5 секунд
+        if (Date.now() - lastSyncTime > 5000) {
             loadFromFirebase();
             lastSyncTime = Date.now();
         }
@@ -942,112 +900,12 @@ function debouncedSave() {
         saveTargets();
     }, 1000);
 }
-    // Настройка слушателей Firebase - УПРОЩЕННАЯ ВЕРСИЯ
-function setupRealtimeListeners() {
-    if (!isOnline) return;
-    
-    try {
-        const db = firebase.database();
-        const targetsRef = db.ref('targets');
-        
-        // Простой слушатель изменений целей
-        targetsRef.on('value', (snapshot) => {
-            if (isSyncing) {
-                isSyncing = false;
-                return;
-            }
-            
-            const firebaseTargets = snapshot.val() || {};
-            console.log("Отримано цілей з Firebase:", Object.keys(firebaseTargets).length);
-            
-            // Полностью заменяем локальные цели на Firebase цели
-            targets = Object.values(firebaseTargets);
-            
-            // Обновляем карту
-            updateMap();
-            updateStats();
-            updateTargetsList();
-            
-            console.log("Дані успішно оновлені з Firebase");
-        });
-        
-    } catch (error) {
-        console.error('Помилка Firebase:', error);
-        isOnline = false;
-        updateStatus();
-    }
-}
-
-// Синхронизировать с Firebase - УПРОЩЕННАЯ ВЕРСИЯ
-function syncWithFirebase() {
-    if (!isOnline || isSyncing) return;
-    
-    isSyncing = true;
-    
-    try {
-        const db = firebase.database();
-        const targetsRef = db.ref('targets');
-        
-        // Конвертуємо масив в об'єкт для Firebase
-        const targetsObject = {};
-        targets.forEach(target => {
-            targetsObject[target.id] = target;
-        });
-        
-        console.log("Відправляємо цілі до Firebase:", targets.length);
-        
-        // Просто записываем все цели
-        targetsRef.set(targetsObject)
-            .then(() => {
-                console.log("Дані успішно синхронізовані з Firebase");
-            })
-            .catch((error) => {
-                console.error("Помилка синхронізації:", error);
-                isOnline = false;
-                updateStatus();
-            })
-            .finally(() => {
-                isSyncing = false;
-            });
-            
-    } catch (error) {
-        console.error("Помилка Firebase:", error);
-        isOnline = false;
-        updateStatus();
-        isSyncing = false;
-    }
-}
-
-// Завантажити дані з Firebase
-function loadFromFirebase() {
-    if (!isOnline || isSyncing) return;
-    
-    try {
-        const db = firebase.database();
-        const targetsRef = db.ref('targets');
-        
-        console.log("Завантаження даних з Firebase...");
-        
-        // Загружаем цели
-        targetsRef.once('value').then((snapshot) => {
-            const firebaseTargets = snapshot.val() || {};
-            console.log("Завантажено цілей з Firebase:", Object.keys(firebaseTargets).length);
-            
-            // Полностью заменяем локальные цели
-            targets = Object.values(firebaseTargets);
-            
-            // Обновляем карту
-            updateMap();
-            updateStats();
-            updateTargetsList();
-            
-        }).catch(error => {
-            console.error("Помилка завантаження цілей:", error);
-        });
-        
-    } catch (error) {
-        console.error('Помилка завантаження з Firebase:', error);
-    }
+</script>
+<script>
+// Додати ціль в центрі карти
+function addTargetAtCenter() {
+    const center = map.getCenter();
+    addTargetAtPosition(center);
 }
 
 // Додати ціль в конкретній позиції
@@ -1099,341 +957,462 @@ function addTargetAtPosition(latlng) {
         timestamp: Date.now()
     }];
     
-    addTargetToMap(target);
-    saveTargets();
-    updateStats();
+    createTargetMarker(target);
     updateTargetsList();
+    updateStats();
+    debouncedSave();
     
-    console.log("Ціль успішно додана:", target.name, "ID:", target.id);
+    console.log("Ціль додана:", target);
 }
 
-// Додати ціль в центрі карти
-function addTargetAtCenter() {
-    const center = map.getCenter();
-    addTargetAtPosition(center);
-}
-
-// Функція для отримання іконки за типом цілі
-function getIconForType(type, course = 0) {
-    const iconUrl = targetTypes[type]?.iconUrl;
-    
-    if (iconUrl) {
-        return L.divIcon({
-            html: `<div class="rotatable-png-icon" style="transform: rotate(${course + 90}deg); 
-                   background-image: url('${iconUrl}')"></div>`,
-            className: 'png-icon-marker',
-            iconSize: [40, 40],
-            iconAnchor: [20, 20]
-        });
+// Створення маркера для цілі
+function createTargetMarker(target) {
+    if (markers[target.id]) {
+        map.removeLayer(markers[target.id]);
     }
     
-    // Простой маркер для неизвестных типов
-    return L.divIcon({
-        html: `<div style="
-            background: #00cec9;
-            width: 35px;
-            height: 35px;
-            border-radius: 50%;
-            border: 3px solid white;
-            box-shadow: 0 0 15px rgba(0,0,0,0.8);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            font-size: 18px;
-            color: white;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.9);
-            transform: rotate(${course}deg);
-        ">●</div>`,
-        iconSize: [35, 35],
-        iconAnchor: [17, 17]
+    const targetTypeInfo = targetTypes[target.type] || targetTypes['невідома ціль'];
+    
+    // Создаем кастомную иконку с возможностью вращения
+    const customIcon = L.divIcon({
+        className: 'rotatable-png-icon',
+        html: `<div style="transform: rotate(${target.course}deg); width: 40px; height: 40px; background-image: url('${targetTypeInfo.iconUrl}'); background-size: contain; background-repeat: no-repeat; background-position: center;"></div>`,
+        iconSize: [40, 40],
+        iconAnchor: [20, 20]
     });
-}
-
-// Додати ціль на карту
-function addTargetToMap(target) {
-    if (markers[target.id]) {
-        if (isClusteringEnabled) {
-            markerCluster.removeLayer(markers[target.id]);
-        } else {
-            individualTargets.removeLayer(markers[target.id]);
-        }
+    
+    const marker = L.marker([target.latitude, target.longitude], {
+        icon: customIcon,
+        rotationAngle: target.course,
+        rotationOrigin: 'center'
+    });
+    
+    // Добавляем всплывающее окно с информацией
+    const popupContent = createPopupContent(target);
+    marker.bindPopup(popupContent, {
+        closeOnClick: false,
+        autoClose: false,
+        closeButton: true,
+        className: 'target-popup'
+    });
+    
+    // Обработчики событий для всплывающего окна
+    marker.on('popupopen', function() {
+        popupOpenTargetId = target.id;
+    });
+    
+    marker.on('popupclose', function() {
+        popupOpenTargetId = null;
+    });
+    
+    // Добавляем контекстное меню
+    marker.on('contextmenu', function(e) {
+        showContextMenu(e, target);
+    });
+    
+    // Добавляем маркер на карту
+    if (isClusteringEnabled) {
+        markerCluster.addLayer(marker);
+    } else {
+        individualTargets.addLayer(marker);
     }
     
-    const icon = getIconForType(target.type, target.course);
-    const marker = L.marker([target.latitude, target.longitude], { icon: icon });
+    markers[target.id] = marker;
     
-    // Форматируем дату создания
-    const createdDate = new Date(target.createdAt);
-    const formattedDate = createdDate.toLocaleString('uk-UA');
+    // Создаем траекторию если включено
+    if (showTrajectories) {
+        createTrajectory(target);
+    }
     
-    // Создаем popup с кнопками действий
-const popupContent = `
-    <div class="target-info-window">
-        <h4>${target.name}</h4>
-        <p><strong>Тип:</strong> ${target.type}</p>
-        <p><strong>Швидкість:</strong> ${target.speed} км/год</p>
-        <p><strong>Курс:</strong> ${target.course}°</p>
-        <p><strong>Відстань:</strong> ${(target.distance / 1000).toFixed(1)} км</p>
-        <p><strong>Додано:</strong> ${formattedDate}</p>
-        <div class="action-buttons">
-            <button class="action-button edit-btn" onclick="event.stopPropagation(); editTarget('${target.id}')">
-                <i class="fas fa-edit"></i> Редагувати
-            </button>
-            <button class="action-button delete-btn" onclick="event.stopPropagation(); deleteTarget('${target.id}')">
-                <i class="fas fa-trash"></i> Видалити
-            </button>
-            <button class="action-button course-btn" onclick="event.stopPropagation(); showCourseSelectionModal('${target.id}')">
-                <i class="fas fa-route"></i> Курс
-            </button>
-        </div>
-    </div>
-`;
-
-marker.bindPopup(popupContent);
-
-if (isClusteringEnabled) {
-    markerCluster.addLayer(marker);
-} else {
-    individualTargets.addLayer(marker);
+    // Создаем стрелку направления если включен режим стрелок
+    if (arrowMode) {
+        createDirectionArrow(target);
+    }
 }
 
-markers[target.id] = marker;
-
-// ОБРАБОТЧИКИ ДЛЯ ОСТАНОВКИ ПРИ ОТКРЫТИИ POPUP
-marker.on('popupopen', function() {
-    pausedTargets.add(target.id);
-});
-
-marker.on('popupclose', function() {
-    pausedTargets.delete(target.id);
-});
-
-// Додаємо траєкторію (всегда, не зависимо от showTrajectories)
-addTrajectory(target);
-}
-
-// Оновити обертання маркера
-function updateMarkerRotation(target) {
-    if (markers[target.id]) {
-        const newIcon = getIconForType(target.type, target.course);
-        markers[target.id].setIcon(newIcon);
-        
-        // Форматируем дату создания
-        const createdDate = new Date(target.createdAt);
-        const formattedDate = createdDate.toLocaleString('uk-UA');
-        
-        // Обновляем popup
-        const popupContent = `
-            <div class="target-info-window">
-                <h4>${target.name}</h4>
-                <p><strong>Тип:</strong> ${target.type</p>
-                <p><strong>Швидкість:</strong> ${target.speed} км/год</p>
-                <p><strong>Курс:</strong> ${target.course}°</p>
-                <p><strong>Відстань:</strong> ${(target.distance / 1000).toFixed(1)} км</p>
-                <p><strong>Додано:</strong> ${formattedDate}</p>
-                <div class="action-buttons">
-                    <button class="action-button edit-btn" onclick="event.stopPropagation(); editTarget('${target.id}')">
-                        <i class="fas fa-edit"></i> Редагувати
-                    </button>
-                    <button class="action-button delete-btn" onclick="event.stopPropagation(); deleteTarget('${target.id}')">
-                        <i class="fas fa-trash"></i> Видалити
-                    </button>
-                    <button class="action-button course-btn" onclick="event.stopPropagation(); showCourseSelectionModal('${target.id}')">
-                        <i class="fas fa-route"></i> Курс
-                    </button>
-                </div>
+// Создание контента для всплывающего окна
+function createPopupContent(target) {
+    return `
+        <div class="target-popup-content">
+            <h4>${target.name}</h4>
+            <p><strong>Тип:</strong> ${targetTypes[target.type].name}</p>
+            <p><strong>Швидкість:</strong> ${target.speed} км/год</p>
+            <p><strong>Курс:</strong> ${target.course}°</p>
+            <p><strong>Відстань:</strong> ${(target.distance / 1000).toFixed(1)} км</p>
+            <div class="popup-actions">
+                <button onclick="editTarget('${target.id}')" class="popup-btn">
+                    <i class="fas fa-edit"></i> Редагувати
+                </button>
+                <button onclick="pauseTarget('${target.id}')" class="popup-btn">
+                    <i class="fas fa-pause"></i> ${pausedTargets.has(target.id) ? 'Продовжити' : 'Пауза'}
+                </button>
+                <button onclick="removeTarget('${target.id}')" class="popup-btn danger">
+                    <i class="fas fa-trash"></i> Видалити
+                </button>
             </div>
-        `;
-        markers[target.id].setPopupContent(popupContent);
-    }
+        </div>
+    `;
 }
 
-// Додати траєкторію
-function addTrajectory(target) {
+// Показать контекстное меню
+function showContextMenu(e, target) {
+    L.popup()
+        .setLatLng(e.latlng)
+        .setContent(`
+            <div class="context-menu">
+                <h4>${target.name}</h4>
+                <button onclick="editTarget('${target.id}')">Редагувати</button>
+                <button onclick="removeTarget('${target.id}')">Видалити</button>
+                <button onclick="setCourseFromMap('${target.id}')">Встановити курс</button>
+            </div>
+        `)
+        .openOn(map);
+}
+
+// Создание траектории
+function createTrajectory(target) {
     if (polylines[target.id]) {
         map.removeLayer(polylines[target.id]);
     }
     
-    if (targetHistory[target.id] && targetHistory[target.id].length > 0) {
-        const polyline = L.polyline(targetHistory[target.id].map(point => [point.lat, point.lng]), {
-            color: '#00cec9',
-            weight: 2,
-            opacity: 0.7,
-            dashArray: '5, 10'
-        });
-        
-        if (showTrajectories) {
-            polyline.addTo(map);
-        }
-        polylines[target.id] = polyline;
-    }
-}
-
-// Обновить все траектории
-function updateTrajectories() {
-    // Удаляем все старые траектории
-    Object.values(polylines).forEach(polyline => {
-        map.removeLayer(polyline);
+    const polyline = L.polyline([], {
+        color: getTargetColor(target.type),
+        weight: 2,
+        opacity: 0.7,
+        smoothFactor: 1
     });
-    polylines = {};
     
-    // Добавляем траектории для всех целей
-    if (showTrajectories) {
-        targets.forEach(target => {
-            if (targetHistory[target.id]) {
-                addTrajectory(target);
-            }
-        });
+    polyline.addTo(map);
+    polylines[target.id] = polyline;
+    updateTrajectory(target);
+}
+
+// Обновление траектории
+function updateTrajectory(target) {
+    if (!showTrajectories || !polylines[target.id]) return;
+    
+    const history = targetHistory[target.id] || [];
+    const points = history.map(point => [point.lat, point.lng]);
+    
+    if (points.length > 1) {
+        polylines[target.id].setLatLngs(points);
     }
 }
 
-// Видалити траєкторію
-function removeTrajectory(targetId) {
-    if (polylines[targetId]) {
-        map.removeLayer(polylines[targetId]);
-        delete polylines[targetId];
+// Создание стрелки направления
+function createDirectionArrow(target) {
+    // Удаляем старую стрелку если есть
+    if (markers[target.id + '-arrow']) {
+        allArrows.removeLayer(markers[target.id + '-arrow']);
     }
+    
+    const arrowLength = 50; // длина стрелки в пикселях
+    const arrowHeadLength = 15;
+    
+    // Рассчитываем конечную точку стрелки
+    const startPoint = map.latLngToContainerPoint([target.latitude, target.longitude]);
+    const angle = (target.course - 90) * Math.PI / 180; // конвертируем в радианы
+    
+    const endPoint = startPoint.add([
+        arrowLength * Math.cos(angle),
+        arrowLength * Math.sin(angle)
+    ]);
+    
+    const endLatLng = map.containerPointToLatLng(endPoint);
+    
+    // Создаем линию стрелки
+    const arrowLine = L.polyline([
+        [target.latitude, target.longitude],
+        [endLatLng.lat, endLatLng.lng]
+    ], {
+        color: getTargetColor(target.type),
+        weight: 2,
+        opacity: 0.8
+    });
+    
+    // Создаем головку стрелки
+    const arrowHead = L.polyline([
+        [endLatLng.lat, endLatLng.lng],
+        // Рассчитываем точки для треугольной головки
+        calculateArrowHeadPoint(endPoint, angle - Math.PI/6),
+        calculateArrowHeadPoint(endPoint, angle + Math.PI/6),
+        [endLatLng.lat, endLatLng.lng]
+    ].map(point => map.containerPointToLatLng(point)), {
+        color: getTargetColor(target.type),
+        weight: 2,
+        opacity: 0.8,
+        fill: true,
+        fillColor: getTargetColor(target.type),
+        fillOpacity: 0.8
+    });
+    
+    // Группируем линию и головку
+    const arrowGroup = L.featureGroup([arrowLine, arrowHead]);
+    allArrows.addLayer(arrowGroup);
+    markers[target.id + '-arrow'] = arrowGroup;
 }
 
-// Переміщення цілей - ИСПРАВЛЕНА СКОРОСТЬ!
+// Вспомогательная функция для расчета точек стрелки
+function calculateArrowHeadPoint(endPoint, angle) {
+    return endPoint.subtract([
+        15 * Math.cos(angle),
+        15 * Math.sin(angle)
+    ]);
+}
+
+// Движение целей
 function moveTargets(deltaTime) {
     const now = Date.now();
     
     targets.forEach(target => {
         if (pausedTargets.has(target.id)) return;
         
-        // РЕАЛИСТИЧНОЕ ДВИЖЕНИЕ: 150 км/ч = 150 км за реальный час
-        // Переводим км/ч в м/с: 150 км/ч = 41.67 м/с
-        const speedMetersPerSecond = (target.speed * 1000) / 3600;
-        const distanceMeters = speedMetersPerSecond * deltaTime;
+        // Обновляем позицию только если прошло достаточно времени
+        if (now - target.updatedAt < 100) return;
         
-        // Переводим расстояние из метров в градусы (приблизительно)
-        // 1 градус широты ≈ 111 км = 111000 м
-        // 1 градус долготы ≈ 111 км * cos(широта)
-        const latDistanceDegrees = distanceMeters / 111000;
-        const lngDistanceDegrees = distanceMeters / (111000 * Math.cos(target.latitude * Math.PI / 180));
+        const speedMps = target.speed / 3.6; // конвертируем км/ч в м/с
+        const distanceMoved = speedMps * deltaTime;
         
-        // Рассчитываем новые координаты с учетом курса
-        const bearingRad = target.course * Math.PI / 180;
-        const deltaLat = latDistanceDegrees * Math.cos(bearingRad);
-        const deltaLng = lngDistanceDegrees * Math.sin(bearingRad);
+        // Рассчитываем новую позицию
+        const newPos = calculateNewPosition(
+            target.latitude,
+            target.longitude,
+            distanceMoved,
+            target.course
+        );
         
-        // Обновляем координаты
-        target.latitude += deltaLat;
-        target.longitude += deltaLng;
-        target.distance += distanceMeters;
+        // Обновляем позицию цели
+        target.latitude = newPos.lat;
+        target.longitude = newPos.lng;
+        target.distance += distanceMoved;
+        target.updatedAt = now;
         
+        // Обновляем максимальную скорость
         if (target.speed > target.maxSpeed) {
             target.maxSpeed = target.speed;
         }
         
-        // Оновлення маркера
-        if (markers[target.id]) {
-            markers[target.id].setLatLng([target.latitude, target.longitude]);
-            updateMarkerRotation(target);
-        }
-        
-        // Оновлення траєкторії
-        if (!targetHistory[target.id]) {
-            targetHistory[target.id] = [];
-        }
-        
-        // Добавляем точку в историю не чаще чем раз в 0.5 секунды
-        if (now - target.lastTrajectoryUpdate > 500) {
+        // Обновляем историю траектории (не чаще чем раз в 2 секунды)
+        if (now - target.lastTrajectoryUpdate > 2000) {
+            if (!targetHistory[target.id]) {
+                targetHistory[target.id] = [];
+            }
+            
             targetHistory[target.id].push({
                 lat: target.latitude,
                 lng: target.longitude,
                 timestamp: now
             });
             
-            // Ограничиваем историю 100 точками
+            // Ограничиваем историю последними 100 точками
             if (targetHistory[target.id].length > 100) {
                 targetHistory[target.id].shift();
             }
             
             target.lastTrajectoryUpdate = now;
-            
-            // Обновляем траекторию на карте
-            if (showTrajectories && polylines[target.id]) {
-                polylines[target.id].setLatLngs(
-                    targetHistory[target.id].map(point => [point.lat, point.lng])
-                );
-            }
         }
         
-        target.updatedAt = now;
+        // Обновляем маркер на карте
+        updateTargetMarker(target);
     });
+}
+
+// Обновление маркера цели
+function updateTargetMarker(target) {
+    const marker = markers[target.id];
+    if (!marker) return;
     
-    // Оновлення часу останнього оновлення
-    document.getElementById('lastUpdate').textContent = 
-        `Оновлено: ${new Date().toLocaleTimeString()}`;
+    // Обновляем позицию
+    marker.setLatLng([target.latitude, target.longitude]);
     
-    // Обновляем статистику раз в секунду (без мерцания)
-    if (Date.now() - lastStatsUpdate > 1000) {
-        updateStats();
-        lastStatsUpdate = Date.now();
+    // Обновляем вращение
+    const iconElement = marker.getElement();
+    if (iconElement) {
+        const imgDiv = iconElement.querySelector('.rotatable-png-icon > div');
+        if (imgDiv) {
+            imgDiv.style.transform = `rotate(${target.course}deg)`;
+        }
+    }
+    
+    // Обновляем траекторию
+    if (showTrajectories) {
+        updateTrajectory(target);
+    }
+    
+    // Обновляем стрелку направления
+    if (arrowMode) {
+        createDirectionArrow(target);
+    }
+    
+    // Обновляем всплывающее окно если оно открыто
+    if (popupOpenTargetId === target.id && marker.isPopupOpen()) {
+        const popupContent = createPopupContent(target);
+        marker.setPopupContent(popupContent);
     }
 }
 
-// Обновление кластеризации - ОТКЛЮЧАЕМ АВТОМАТИЧЕСКУЮ КЛАСТЕРИЗАЦИЮ
-function updateTargetClusters() {
-    // ОТКЛЮЧАЕМ АВТОМАТИЧЕСКУЮ КЛАСТЕРИЗАЦИЮ ПРИ ZOOM
-    // Цели остаются отдельными на любом уровне масштаба
+// Расчет новой позиции
+function calculateNewPosition(lat, lng, distance, bearing) {
+    const R = 6371000; // радиус Земли в метрах
+    const bearingRad = bearing * Math.PI / 180;
     
-    if (isClusteringEnabled) {
-        // Если кластеризация включена - просто обновляем
-        markerCluster.refreshClusters();
+    const latRad = lat * Math.PI / 180;
+    const lngRad = lng * Math.PI / 180;
+    
+    const newLat = Math.asin(Math.sin(latRad) * Math.cos(distance/R) +
+                           Math.cos(latRad) * Math.sin(distance/R) * Math.cos(bearingRad));
+    
+    const newLng = lngRad + Math.atan2(Math.sin(bearingRad) * Math.sin(distance/R) * Math.cos(latRad),
+                                     Math.cos(distance/R) - Math.sin(latRad) * Math.sin(newLat));
+    
+    return {
+        lat: newLat * 180 / Math.PI,
+        lng: newLng * 180 / Math.PI
+    };
+}
+
+// Получение цвета для типа цели
+function getTargetColor(type) {
+    const colors = {
+        'дрон': '#ff6b6b',
+        'ракета': '#ee5a24',
+        'винищувач': '#0984e3',
+        'бомба': '#fbc531',
+        'корабль': '#00cec9',
+        'вертоліт': '#9c88ff',
+        'пускова установка': '#e84118',
+        'група бпла': '#8c7ae6',
+        'розвідник': '#44bd32',
+        'невідома ціль': '#7f8c8d'
+    };
+    return colors[type] || '#7f8c8d';
+}
+</script>
+<script>
+// Обновление списка целей
+function updateTargetsList() {
+    const targetsList = document.getElementById('targetsList');
+    if (!targetsList) return;
+    
+    targetsList.innerHTML = '';
+    
+    targets.forEach(target => {
+        const targetItem = document.createElement('div');
+        targetItem.className = 'target-item';
+        targetItem.innerHTML = `
+            <h4>
+                <span>${target.name}</span>
+                <span>${target.speed} км/год</span>
+            </h4>
+            <p><strong>Тип:</strong> ${targetTypes[target.type].name}</p>
+            <p><strong>Курс:</strong> ${target.course}°</p>
+            <p><strong>Відстань:</strong> ${(target.distance / 1000).toFixed(1)} км</p>
+            <div class="target-actions">
+                <button onclick="editTarget('${target.id}')" class="btn">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button onclick="pauseTarget('${target.id}')" class="btn ${pausedTargets.has(target.id) ? 'btn-secondary' : ''}">
+                    <i class="fas ${pausedTargets.has(target.id) ? 'fa-play' : 'fa-pause'}"></i>
+                </button>
+                <button onclick="removeTarget('${target.id}')" class="btn btn-danger">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </div>
+        `;
+        targetsList.appendChild(targetItem);
+    });
+}
+
+// Обновление статистики
+function updateStats() {
+    const total = targets.length;
+    const active = targets.filter(t => !pausedTargets.has(t.id)).length;
+    const maxSpeed = targets.reduce((max, t) => Math.max(max, t.maxSpeed), 0);
+    const totalDistance = targets.reduce((sum, t) => sum + t.distance, 0) / 1000;
+    
+    document.getElementById('totalTargets').textContent = total;
+    document.getElementById('activeTargets').textContent = active;
+    document.getElementById('maxSpeed').textContent = maxSpeed;
+    document.getElementById('totalDistance').textContent = totalDistance.toFixed(1);
+    
+    lastStatsUpdate = Date.now();
+}
+
+// Обновление статуса
+function updateStatus() {
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const lastUpdate = document.getElementById('lastUpdate');
+    
+    if (isOnline) {
+        statusDot.className = 'online-dot';
+        statusText.textContent = 'Онлайн';
+    } else {
+        statusDot.className = 'offline-dot';
+        statusText.textContent = 'Офлайн';
     }
-    // Если кластеризация выключена - ничего не делаем
-}
-    // Редагувати ціль
-function editTarget(targetId) {
-    const target = targets.find(t => t.id === targetId);
-    if (!target) return;
     
-    currentEditTargetId = targetId;
-    document.getElementById('editName').value = target.name;
-    document.getElementById('editType').value = target.type;
-    document.getElementById('editSpeed').value = target.speed;
-    document.getElementById('editCourse').value = target.course;
-    
-    document.getElementById('editModal').style.display = 'block';
+    lastUpdate.textContent = 'Оновлено: ' + new Date().toLocaleTimeString();
 }
 
-// Зберегти редагування цілі
-function saveTargetEdit() {
-    if (!currentEditTargetId) return;
-    
-    const target = targets.find(t => t.id === currentEditTargetId);
-    if (!target) return;
-    
-    target.name = document.getElementById('editName').value;
-    target.type = document.getElementById('editType').value;
-    target.speed = parseInt(document.getElementById('editSpeed').value);
-    target.course = parseInt(document.getElementById('editCourse').value);
-    target.updatedAt = Date.now();
-    
-    // Оновити маркер
-    updateMarkerRotation(target);
-    
-    closeEditModal();
-    saveTargets();
-    updateStats();
-    updateTargetsList();
+// Сохранение целей в localStorage
+function saveTargets() {
+    try {
+        const dataToSave = {
+            targets: targets,
+            targetHistory: targetHistory,
+            settings: {
+                showTrajectories: showTrajectories,
+                isClusteringEnabled: isClusteringEnabled,
+                arrowMode: arrowMode
+            }
+        };
+        
+        localStorage.setItem('airTargets', JSON.stringify(dataToSave));
+        console.log("Цілі збережено локально");
+    } catch (error) {
+        console.error("Помилка збереження:", error);
+    }
 }
 
-// Видалити ціль
-function deleteTarget(targetId) {
+// Загрузка целей из localStorage
+function loadTargetsFromLocalStorage() {
+    try {
+        const savedData = localStorage.getItem('airTargets');
+        if (savedData) {
+            const data = JSON.parse(savedData);
+            
+            targets = data.targets || [];
+            targetHistory = data.targetHistory || {};
+            
+            if (data.settings) {
+                showTrajectories = data.settings.showTrajectories !== false;
+                isClusteringEnabled = data.settings.isClusteringEnabled !== false;
+                arrowMode = data.settings.arrowMode || false;
+            }
+            
+            // Восстанавливаем маркеры
+            targets.forEach(target => {
+                createTargetMarker(target);
+            });
+            
+            updateTargetsList();
+            updateStats();
+            console.log("Цілі завантажено з локального сховища");
+        }
+    } catch (error) {
+        console.error("Помилка завантаження:", error);
+    }
+}
+
+// Удаление цели
+function removeTarget(targetId) {
     if (!confirm('Ви впевнені, що хочете видалити цю ціль?')) return;
     
-    // Удаляем цель
     const targetIndex = targets.findIndex(t => t.id === targetId);
-    if (targetIndex !== -1) {
-        targets.splice(targetIndex, 1);
-    }
+    if (targetIndex === -1) return;
     
-    // Видалити маркер
+    // Удаляем с карты
     if (markers[targetId]) {
         if (isClusteringEnabled) {
             markerCluster.removeLayer(markers[targetId]);
@@ -1443,482 +1422,586 @@ function deleteTarget(targetId) {
         delete markers[targetId];
     }
     
-    // Видалити траєкторію
-    removeTrajectory(targetId);
+    // Удаляем траекторию
+    if (polylines[targetId]) {
+        map.removeLayer(polylines[targetId]);
+        delete polylines[targetId];
+    }
     
-    // Видалити з історії
+    // Удаляем стрелку
+    if (markers[targetId + '-arrow']) {
+        allArrows.removeLayer(markers[targetId + '-arrow']);
+        delete markers[targetId + '-arrow'];
+    }
+    
+    // Удаляем из массивов
+    targets.splice(targetIndex, 1);
     delete targetHistory[targetId];
+    pausedTargets.delete(targetId);
     
-    saveTargets();
+    // Добавляем в список удаленных для синхронизации
+    deletedTargets.add(targetId);
+    
+    updateTargetsList();
     updateStats();
+    debouncedSave();
+}
+
+// Пауза/продолжение цели
+function pauseTarget(targetId) {
+    if (pausedTargets.has(targetId)) {
+        pausedTargets.delete(targetId);
+    } else {
+        pausedTargets.add(targetId);
+    }
     updateTargetsList();
 }
 
-// Очистити всі цілі
-function clearAllTargets() {
-    if (!confirm('Ви впевнені, що хочете видалити всі цілі?')) return;
+// Редактирование цели
+function editTarget(targetId) {
+    const target = targets.find(t => t.id === targetId);
+    if (!target) return;
     
-    // Очищаем все цели
-    targets = [];
+    currentEditTargetId = targetId;
     
-    // Видалити всі маркери
-    markerCluster.clearLayers();
-    individualTargets.clearLayers();
-    markers = {};
+    document.getElementById('editName').value = target.name;
+    document.getElementById('editType').value = target.type;
+    document.getElementById('editSpeed').value = target.speed;
+    document.getElementById('editCourse').value = target.course;
     
-    // Видалити всі траєкторії
-    Object.values(polylines).forEach(polyline => {
-        map.removeLayer(polyline);
-    });
-    polylines = {};
-    
-    // Очистити історію
-    targetHistory = {};
-    
-    saveTargets();
-    updateStats();
-    updateTargetsList();
+    document.getElementById('editModal').style.display = 'block';
 }
 
-// Показати модальне вікно вибору курсу
-function showCourseSelectionModal(targetId) {
-    selectedTargetForCourse = targetId;
+// Сохранение редактирования
+function saveTargetEdit() {
+    if (!currentEditTargetId) return;
+    
+    const target = targets.find(t => t.id === currentEditTargetId);
+    if (!target) return;
+    
+    const name = document.getElementById('editName').value.trim();
+    const type = document.getElementById('editType').value;
+    const speed = parseInt(document.getElementById('editSpeed').value);
+    const course = parseInt(document.getElementById('editCourse').value);
+    
+    if (!name) {
+        alert('Будь ласка, введіть назву цілі');
+        return;
+    }
+    
+    if (isNaN(speed) || speed < 0 || speed > 30000) {
+        alert('Швидкість повинна бути від 0 до 30000 км/год');
+        return;
+    }
+    
+    if (isNaN(course) || course < 0 || course > 360) {
+        alert('Курс повинен бути від 0 до 360 градусів');
+        return;
+    }
+    
+    target.name = name;
+    target.type = type;
+    target.speed = speed;
+    target.course = course;
+    target.updatedAt = Date.now();
+    
+    // Обновляем маркер
+    if (markers[target.id]) {
+        map.removeLayer(markers[target.id]);
+    }
+    createTargetMarker(target);
+    
+    updateTargetsList();
+    updateStats();
+    debouncedSave();
+    
+    closeEditModal();
+}
+
+// Закрытие модального окна
+function closeEditModal() {
+    document.getElementById('editModal').style.display = 'none';
+    currentEditTargetId = null;
+}
+
+// Установка курса с карты
+function setCourseFromMap(targetId) {
+    const target = targets.find(t => t.id === targetId);
+    if (!target) return;
+    
+    selectedTargetForCourse = target;
     isCourseSelectionMode = true;
+    
     document.getElementById('courseSelectionModal').style.display = 'block';
-    alert('Режим вибору курсу увімкнено. Клацніть по карті, щоб встановити курс');
 }
 
-// Підтвердити вибір курсу
+// Подтверждение выбора курса
 function confirmCourseSelection() {
+    isCourseSelectionMode = false;
     document.getElementById('courseSelectionModal').style.display = 'none';
 }
 
-// Скасувати вибір курсу
+// Отмена выбора курса
 function cancelCourseSelection() {
     isCourseSelectionMode = false;
     selectedTargetForCourse = null;
     document.getElementById('courseSelectionModal').style.display = 'none';
 }
 
-// Встановити курс з карти
+// Установка курса из клика по карте
 function setTargetCourseFromMap(latlng) {
     if (!selectedTargetForCourse) return;
     
-    const target = targets.find(t => t.id === selectedTargetForCourse);
-    if (!target) return;
+    const targetLatLng = L.latLng(
+        selectedTargetForCourse.latitude,
+        selectedTargetForCourse.longitude
+    );
     
-    // Розраховуємо курс між поточною позицією та обраною точкою
-    const currentLatLng = L.latLng(target.latitude, target.longitude);
-    const course = calculateCourse(currentLatLng, latlng);
+    // Рассчитываем курс от цели до выбранной точки
+    const dx = latlng.lng - targetLatLng.lng;
+    const dy = latlng.lat - targetLatLng.lat;
     
-    // Оновлюємо курс цілі
-    target.course = course;
-    target.updatedAt = Date.now();
+    let course = Math.atan2(dy, dx) * 180 / Math.PI;
+    course = (360 + course) % 360; // нормализуем от 0 до 360
     
-    // Оновлюємо маркер
-    updateMarkerRotation(target);
+    selectedTargetForCourse.course = Math.round(course);
+    selectedTargetForCourse.updatedAt = Date.now();
     
-    // Зберігаємо зміни
+    // Обновляем маркер
+    updateTargetMarker(selectedTargetForCourse);
+    
+    updateTargetsList();
     debouncedSave();
     
-    // Закриваємо модальне вікно
-    cancelCourseSelection();
-    
-    console.log(`Курс цілі ${target.name} змінено на: ${course}°`);
+    isCourseSelectionMode = false;
+    selectedTargetForCourse = null;
+    document.getElementById('courseSelectionModal').style.display = 'none';
 }
 
-// Розрахувати курс між двома точками
-function calculateCourse(from, to) {
-    const dLon = (to.lng - from.lng) * Math.PI / 180;
-    const lat1 = from.lat * Math.PI / 180;
-    const lat2 = to.lat * Math.PI / 180;
+// Переключение панели
+function togglePanel() {
+    const panel = document.getElementById('sidePanel');
+    const toggleBtn = document.querySelector('.toggle-panel-btn');
     
-    const y = Math.sin(dLon) * Math.cos(lat2);
-    const x = Math.cos(lat1) * Math.sin(lat2) -
-             Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
-    
-    let course = Math.atan2(y, x) * 180 / Math.PI;
-    course = (course + 360) % 360;
-    
-    return Math.round(course);
-}
-
-// Оновити список цілей
-function updateTargetsList() {
-    const targetsList = document.getElementById('targetsList');
-    targetsList.innerHTML = '';
-    
-    targets.forEach(target => {
-        const createdDate = new Date(target.createdAt);
-        const formattedDate = createdDate.toLocaleString('uk-UA');
-        
-        const targetItem = document.createElement('div');
-        targetItem.className = 'target-item';
-        targetItem.innerHTML = `
-            <h4>${target.name} <span style="font-size: 12px; color: #00cec9;">${target.type}</span></h4>
-            <p>Швидкість: ${target.speed} км/год</p>
-            <p>Курс: ${target.course}°</p>
-            <p>Відстань: ${(target.distance / 1000).toFixed(1)} км</p>
-            <p>Додано: ${formattedDate}</p>
-            <div class="target-actions">
-                <button class="btn" onclick="editTarget('${target.id}')" style="padding: 5px; font-size: 12px;">
-                    <i class="fas fa-edit"></i>
-                </button>
-                <button class="btn btn-danger" onclick="deleteTarget('${target.id}')" style="padding: 5px; font-size: 12px;">
-                    <i class="fas fa-trash"></i>
-                </button>
-                <button class="btn btn-secondary" onclick="showCourseSelectionModal('${target.id}')" style="padding: 5px; font-size: 12px;">
-                    <i class="fas fa-route"></i>
-                </button>
-            </div>
-        `;
-        targetsList.appendChild(targetItem);
-    });
-}
-
-// Оновити статистику
-function updateStats() {
-    document.getElementById('totalTargets').textContent = targets.length;
-    document.getElementById('activeTargets').textContent = targets.filter(t => t.speed > 0).length;
-    
-    const maxSpeed = targets.reduce((max, target) => 
-        target.speed > max ? target.speed : max, 0
-    );
-    document.getElementById('maxSpeed').textContent = maxSpeed;
-    
-    const totalDistance = targets.reduce((sum, target) => 
-        sum + target.distance, 0
-    );
-    document.getElementById('totalDistance').textContent = (totalDistance / 1000).toFixed(1);
-}
-
-// Оновити статус
-function updateStatus() {
-    const statusDot = document.getElementById('statusDot');
-    const statusText = document.getElementById('statusText');
-    
-    if (isOnline) {
-        statusDot.className = 'online-dot';
-        statusText.textContent = 'Онлайн';
+    if (isPanelExpanded) {
+        panel.classList.add('collapsed');
+        toggleBtn.innerHTML = '<i class="fas fa-eye"></i><span>Панель</span>';
     } else {
-        statusDot.className = 'offline-dot';
-        statusText.textContent = 'Офлайн';
+        panel.classList.remove('collapsed');
+        toggleBtn.innerHTML = '<i class="fas fa-eye-slash"></i><span>Панель</span>';
     }
-}
-
-// Зберегти цілі - ДОБАВЛЕНО ЛОГИРОВАНИЕ
-function saveTargets() {
-    saveTargetsToLocalStorage();
     
-    if (isOnline) {
-        console.log("Збереження цілей та синхронізація з Firebase...");
-        syncWithFirebase();
-    } else {
-        console.log("Збереження цілей локально (офлайн режим)");
-    }
+    isPanelExpanded = !isPanelExpanded;
+    setTimeout(() => map.invalidateSize(), 300);
 }
 
-// Зберегти в локальне сховище
-function saveTargetsToLocalStorage() {
-    try {
-        localStorage.setItem('airTargets', JSON.stringify(targets));
-        localStorage.setItem('airTargetsHistory', JSON.stringify(targetHistory));
-        console.log("Цілі збережено в локальне сховище");
-    } catch (error) {
-        console.error("Помилка збереження в локальне сховище:", error);
-    }
-}
-
-// Завантажити з локального сховища
-function loadTargetsFromLocalStorage() {
-    try {
-        const savedTargets = localStorage.getItem('airTargets');
-        const savedHistory = localStorage.getItem('airTargetsHistory');
-        
-        if (savedTargets) {
-            targets = JSON.parse(savedTargets);
-            console.log("Цілі завантажено з локального сховища:", targets.length);
-        }
-        
-        if (savedHistory) {
-            targetHistory = JSON.parse(savedHistory);
-        }
-        
-        updateMap();
-        updateStats();
-        updateTargetsList();
-    } catch (error) {
-        console.error("Помилка завантаження з локального сховища:", error);
-        targets = [];
-        targetHistory = {};
-    }
-}
-
-// Переключити траєкторії
+// Переключение траекторий
 function toggleTrajectories() {
     showTrajectories = !showTrajectories;
     
     if (showTrajectories) {
+        // Создаем траектории для всех целей
         targets.forEach(target => {
-            if (targetHistory[target.id]) {
-                addTrajectory(target);
-            }
+            createTrajectory(target);
         });
     } else {
+        // Удаляем все траектории
         Object.values(polylines).forEach(polyline => {
             map.removeLayer(polyline);
         });
         polylines = {};
     }
     
-    alert(`Траєкторії ${showTrajectories ? 'увімкнено' : 'вимкнено'}`);
+    debouncedSave();
 }
 
-// Експорт цілей
-function exportTargets() {
-    try {
-        const dataStr = JSON.stringify(targets, null, 2);
-        const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
-        
-        const exportFileDefaultName = 'air-targets-' + new Date().toISOString().slice(0, 10) + '.json';
-        
-        const linkElement = document.createElement('a');
-        linkElement.setAttribute('href', dataUri);
-        linkElement.setAttribute('download', exportFileDefaultName);
-        linkElement.click();
-    } catch (error) {
-        console.error("Помилка експорту:", error);
-        alert('Помилка при експорті даних');
+// Переключение кластеризации
+function toggleClustering() {
+    isClusteringEnabled = !isClusteringEnabled;
+    const toggleBtn = document.getElementById('toggleClusterBtn');
+    
+    if (isClusteringEnabled) {
+        toggleBtn.innerHTML = '<i class="fas fa-object-group"></i>Вимкнути кластеризацію';
+        // Перемещаем все маркеры в кластер
+        Object.values(markers).forEach(marker => {
+            markerCluster.addLayer(marker);
+            individualTargets.removeLayer(marker);
+        });
+    } else {
+        toggleBtn.innerHTML = '<i class="fas fa-object-group"></i>Увімкнути кластеризацію';
+        // Перемещаем все маркеры из кластера
+        Object.values(markers).forEach(marker => {
+            markerCluster.removeLayer(marker);
+            individualTargets.addLayer(marker);
+        });
     }
+    
+    debouncedSave();
 }
 
-// Імпорт цілей
+// Переключение режима стрелок
+function toggleArrowMode() {
+    arrowMode = !arrowMode;
+    const toggleBtn = document.getElementById('toggleArrowBtn');
+    
+    if (arrowMode) {
+        toggleBtn.innerHTML = '<i class="fas fa-draw-polygon"></i>Вимкнути режим стрілок';
+        // Создаем стрелки для всех целей
+        targets.forEach(target => {
+            createDirectionArrow(target);
+        });
+    } else {
+        toggleBtn.innerHTML = '<i class="fas fa-draw-polygon"></i>Увімкнути режим стрілок';
+        // Удаляем все стрелки
+        allArrows.clearLayers();
+        Object.keys(markers).forEach(key => {
+            if (key.endsWith('-arrow')) {
+                delete markers[key];
+            }
+        });
+    }
+    
+    debouncedSave();
+}
+
+// Очистка всех целей
+function clearAllTargets() {
+    if (!confirm('Ви впевнені, що хочете видалити всі цілі? Цю дію не можна скасувати.')) return;
+    
+    // Удаляем все с карты
+    Object.values(markers).forEach(marker => {
+        map.removeLayer(marker);
+    });
+    Object.values(polylines).forEach(polyline => {
+        map.removeLayer(polyline);
+    });
+    allArrows.clearLayers();
+    
+    // Очищаем массивы
+    targets = [];
+    markers = {};
+    polylines = {};
+    targetHistory = {};
+    pausedTargets.clear();
+    
+    // Добавляем все ID в удаленные для синхронизации
+    Object.keys(markers).forEach(key => {
+        if (!key.endsWith('-arrow')) {
+            deletedTargets.add(key);
+        }
+    });
+    
+    updateTargetsList();
+    updateStats();
+    debouncedSave();
+}
+
+// Экспорт целей
+function exportTargets() {
+    const dataToExport = {
+        targets: targets,
+        exportedAt: new Date().toISOString(),
+        version: '1.0'
+    };
+    
+    const dataStr = JSON.stringify(dataToExport, null, 2);
+    const dataUri = 'data:application/json;charset=utf-8,'+ encodeURIComponent(dataStr);
+    
+    const exportFileDefaultName = 'air_targets_export.json';
+    
+    const linkElement = document.createElement('a');
+    linkElement.setAttribute('href', dataUri);
+    linkElement.setAttribute('download', exportFileDefaultName);
+    linkElement.click();
+}
+
+// Импорт целей
 function importTargets() {
     document.getElementById('importFile').click();
 }
 
-// Обробник вибору файлу для імпорту
-document.getElementById('importFile').addEventListener('change', function(event) {
-    const file = event.target.files[0];
+// Обработчик выбора файла для импорта
+document.getElementById('importFile').addEventListener('change', function(e) {
+    const file = e.target.files[0];
     if (!file) return;
     
     const reader = new FileReader();
     reader.onload = function(e) {
         try {
-            const importedTargets = JSON.parse(e.target.result);
+            const importedData = JSON.parse(e.target.result);
             
-            if (Array.isArray(importedTargets)) {
-                // Додати імпортовані цілі
-                importedTargets.forEach(target => {
-                    // Генеруємо новий ID для уникнення конфліктів
-                    target.id = Date.now().toString() + '-' + Math.random().toString(36).substr(2, 9);
-                    target.createdAt = Date.now();
-                    target.updatedAt = Date.now();
-                    target.createdBy = userSessionId;
-                    targets.push(target);
-                });
-                
-                updateMap();
-                saveTargets();
-                updateStats();
-                updateTargetsList();
-                
-                alert(`Успішно імпортовано ${importedTargets.length} цілей`);
-            } else {
-                alert('Невірний формат файлу');
+            if (!importedData.targets || !Array.isArray(importedData.targets)) {
+                throw new Error('Невірний формат файлу');
             }
+            
+            // Удаляем старые цели
+            clearAllTargets();
+            
+            // Добавляем импортированные цели
+            importedData.targets.forEach(target => {
+                // Генерируем новые ID для избежания конфликтов
+                target.id = Date.now().toString() + '-' + userSessionId + '-' + Math.random().toString(36).substr(2, 9);
+                target.createdBy = userSessionId;
+                target.updatedAt = Date.now();
+                
+                targets.push(target);
+                createTargetMarker(target);
+            });
+            
+            updateTargetsList();
+            updateStats();
+            debouncedSave();
+            
+            alert(`Успішно імпортовано ${importedData.targets.length} цілей`);
+            
         } catch (error) {
             console.error('Помилка імпорту:', error);
-            alert('Помилка при імпорті файлу');
+            alert('Помилка імпорту: ' + error.message);
         }
     };
     reader.readAsText(file);
     
-    // Очистити input
-    event.target.value = '';
+    // Сбрасываем значение input для возможности повторного выбора того же файла
+    e.target.value = '';
 });
 
-// Переключити панель
-function togglePanel() {
-    const panel = document.getElementById('sidePanel');
-    panel.classList.toggle('collapsed');
-    isPanelExpanded = !isPanelExpanded;
+// Обновление кластеризации
+function updateTargetClusters() {
+    if (!isClusteringEnabled) return;
     
-    const button = document.querySelector('.toggle-panel-btn');
-    button.innerHTML = isPanelExpanded ? 
-        '<i class="fas fa-eye-slash"></i><span>Сховати</span>' : 
-        '<i class="fas fa-eye"></i><span>Панель</span>';
+    // Принудительно обновляем кластеры
+    markerCluster.refreshClusters();
 }
 
-// Закрити модальне вікно редагування
-function closeEditModal() {
-    document.getElementById('editModal').style.display = 'none';
-    currentEditTargetId = null;
-}
-
-// НОВЫЕ ФУНКЦИИ ДЛЯ СТРЕЛОК И КЛАСТЕРИЗАЦИИ
-
-// Переключение кластеризации
-function toggleClustering() {
-    isClusteringEnabled = !isClusteringEnabled;
-    const button = document.getElementById('toggleClusterBtn');
-    
-    if (isClusteringEnabled) {
-        button.innerHTML = '<i class="fas fa-object-group"></i>Вимкнути кластеризацію';
-        // Перемещаем все маркеры в кластер
-        individualTargets.eachLayer(function(marker) {
-            markerCluster.addLayer(marker);
-        });
-        individualTargets.clearLayers();
-        map.removeLayer(individualTargets);
-        map.addLayer(markerCluster);
-    } else {
-        button.innerHTML = '<i class="fas fa-object-group"></i>Увімкнути кластеризацію';
-        // Извлекаем маркеры из кластера и добавляем по отдельности
-        markerCluster.eachLayer(function(marker) {
-            individualTargets.addLayer(marker);
-        });
-        markerCluster.clearLayers();
-        map.removeLayer(markerCluster);
-        map.addLayer(individualTargets);
-    }
-}
-
-// Переключение режима стрелки
-function toggleArrowMode() {
-    arrowMode = !arrowMode;
-    const button = document.getElementById('toggleArrowBtn');
-    
-    if (arrowMode) {
-        button.style.backgroundColor = '#4CAF50';
-        button.style.color = 'white';
-        button.innerHTML = '<i class="fas fa-draw-polygon"></i>Вийти з режиму стрілок';
-    } else {
-        button.style.backgroundColor = '';
-        button.style.color = '';
-        button.innerHTML = '<i class="fas fa-draw-polygon"></i>Режим стрілок';
-        // Видаляємо тимчасову лінію, якщо режим вимкнуто
-        if (tempArrowLine) {
-            map.removeLayer(tempArrowLine);
-            tempArrowLine = null;
-        }
-        tempArrowStartLatLng = null;
-    }
-}
-
-// Обработчик клика для рисования стрелок
-function handleArrowClick(e) {
-    if (!arrowMode) return;
-
-    if (!tempArrowStartLatLng) {
-        // Первый клик - начало стрелки
-        tempArrowStartLatLng = e.latlng;
-        tempArrowLine = L.polyline([tempArrowStartLatLng, e.latlng], {color: 'red'}).addTo(map);
-    } else {
-        // Второй клик - конец стрелки
-        const arrowIcon = L.icon({
-            iconUrl: 'icons/strelka.png',
-            iconSize: [40, 40],
-            iconAnchor: [20, 20]
-        });
-
-        const arrowHead = L.marker(e.latlng, {icon: arrowIcon});
-        const arrowBody = L.polyline([tempArrowStartLatLng, e.latlng], {color: 'red', weight: 3});
-
-        // Добавляем контекстное меню для удаления стрелки
-        arrowHead.on('contextmenu', function(e) {
-            map.removeLayer(arrowHead);
-            map.removeLayer(arrowBody);
-        });
-        arrowBody.on('contextmenu', function(e) {
-            map.removeLayer(arrowHead);
-            map.removeLayer(arrowBody);
-        });
-
-        // Добавляем стрелку на карту и в группу
-        allArrows.addLayer(arrowHead);
-        allArrows.addLayer(arrowBody);
-
-        // Сбрасываем временные переменные
-        map.removeLayer(tempArrowLine);
-        tempArrowLine = null;
-        tempArrowStartLatLng = null;
-    }
-}
-
-// Налаштування обробників подій
+// Настройка обработчиков событий
 function setupEventListeners() {
-    // Закриття модальних вікон по кліку на затемнений фон
-    const modals = document.querySelectorAll('.modal');
-    modals.forEach(modal => {
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-                isAddTargetMode = false;
-                isCourseSelectionMode = false;
-            }
-        });
+    // Закрытие модальных окон по клику вне области
+    window.addEventListener('click', function(e) {
+        const editModal = document.getElementById('editModal');
+        const courseModal = document.getElementById('courseSelectionModal');
+        
+        if (e.target === editModal) {
+            closeEditModal();
+        }
+        if (e.target === courseModal) {
+            cancelCourseSelection();
+        }
     });
     
-    // Обробка клавіші ESC
+    // Обработка клавиши Escape
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            closeEditModal();
-            cancelCourseSelection();
-            isAddTargetMode = false;
+            if (document.getElementById('editModal').style.display === 'block') {
+                closeEditModal();
+            }
+            if (document.getElementById('courseSelectionModal').style.display === 'block') {
+                cancelCourseSelection();
+            }
+            if (isCourseSelectionMode) {
+                isCourseSelectionMode = false;
+                selectedTargetForCourse = null;
+                document.getElementById('courseSelectionModal').style.display = 'none';
+            }
         }
     });
     
-    // Автозаповнення назви цілі
-    document.getElementById('targetName').addEventListener('focus', function() {
-        if (!this.value) {
-            this.value = 'Ціль-' + (targets.length + 1);
+    // Автоматическое обновление статуса
+    setInterval(updateStatus, 5000);
+}
+
+// Firebase функции
+function setupRealtimeListeners() {
+    if (!isOnline) return;
+    
+    const db = firebase.database();
+    
+    // Слушаем изменения в количестве онлайн пользователей
+    const usersRef = db.ref('onlineUsers');
+    usersRef.on('value', (snapshot) => {
+        const onlineCount = snapshot.numChildren();
+        document.getElementById('onlineUsers').textContent = `Онлайн: ${onlineCount}`;
+    });
+    
+    // Отмечаем себя как онлайн
+    const userRef = db.ref('onlineUsers/' + userSessionId);
+    userRef.set(true);
+    userRef.onDisconnect().remove();
+}
+
+function syncWithFirebase() {
+    if (!isOnline || isSyncing) return;
+    
+    isSyncing = true;
+    const db = firebase.database();
+    
+    try {
+        // Синхронизируем цели
+        const targetsRef = db.ref('targets');
+        targetsRef.set(targets);
+        
+        // Синхронизируем удаленные цели
+        const deletedRef = db.ref('deletedTargets');
+        const deletedArray = Array.from(deletedTargets);
+        if (deletedArray.length > 0) {
+            deletedRef.set(deletedArray);
+            deletedTargets.clear();
         }
-    });
+        
+        console.log("Дані синхронізовано з Firebase");
+    } catch (error) {
+        console.error("Помилка синхронізації:", error);
+    } finally {
+        isSyncing = false;
+    }
 }
 
-// Оновити карту
-function updateMap() {
-    // Очистити всі маркери
-    markerCluster.clearLayers();
-    individualTargets.clearLayers();
-    markers = {};
+function loadFromFirebase() {
+    if (!isOnline || isSyncing) return;
     
-    // Очистити всі траєкторії
-    Object.values(polylines).forEach(polyline => {
-        map.removeLayer(polyline);
-    });
-    polylines = {};
+    isSyncing = true;
+    const db = firebase.database();
     
-    // Додати цілі на карту
-    targets.forEach(target => {
-        addTargetToMap(target);
-    });
+    try {
+        const targetsRef = db.ref('targets');
+        targetsRef.once('value', (snapshot) => {
+            const remoteTargets = snapshot.val() || [];
+            
+            // Обновляем только если данные изменились
+            if (JSON.stringify(remoteTargets) !== JSON.stringify(targets)) {
+                // Сохраняем текущие paused статусы
+                const currentPaused = new Set(pausedTargets);
+                
+                // Обновляем цели
+                targets = remoteTargets;
+                
+                // Восстанавливаем paused статусы
+                pausedTargets.clear();
+                targets.forEach(target => {
+                    if (currentPaused.has(target.id)) {
+                        pausedTargets.add(target.id);
+                    }
+                });
+                
+                // Пересоздаем маркеры
+                Object.values(markers).forEach(marker => {
+                    map.removeLayer(marker);
+                });
+                markers = {};
+                
+                targets.forEach(target => {
+                    createTargetMarker(target);
+                });
+                
+                updateTargetsList();
+                updateStats();
+                
+                console.log("Дані завантажено з Firebase");
+            }
+        });
+        
+        // Загружаем удаленные цели
+        const deletedRef = db.ref('deletedTargets');
+        deletedRef.once('value', (snapshot) => {
+            const remoteDeleted = snapshot.val() || [];
+            
+            remoteDeleted.forEach(targetId => {
+                const index = targets.findIndex(t => t.id === targetId);
+                if (index !== -1) {
+                    targets.splice(index, 1);
+                    if (markers[targetId]) {
+                        map.removeLayer(markers[targetId]);
+                        delete markers[targetId];
+                    }
+                }
+            });
+            
+            // Очищаем удаленные на сервере
+            deletedRef.set([]);
+        });
+        
+    } catch (error) {
+        console.error("Помилка завантаження:", error);
+    } finally {
+        isSyncing = false;
+    }
 }
 
-// Ініціалізація при завантаженні сторінки
+// Обработчик для режима стрелок
+function handleArrowClick(e) {
+    if (!tempArrowStartLatLng) {
+        // Первый клик - устанавливаем начальную точку
+        tempArrowStartLatLng = e.latlng;
+        tempArrowLine = L.polyline([tempArrowStartLatLng, tempArrowStartLatLng], {
+            color: '#00cec9',
+            weight: 3,
+            dashArray: '5, 10'
+        }).addTo(map);
+    } else {
+        // Второй клик - создаем цель
+        const bearing = calculateBearing(
+            tempArrowStartLatLng.lat,
+            tempArrowStartLatLng.lng,
+            e.latlng.lat,
+            e.latlng.lng
+        );
+        
+        document.getElementById('targetCourse').value = Math.round(bearing);
+        addTargetAtPosition(tempArrowStartLatLng);
+        
+        // Очищаем временные данные
+        map.removeLayer(tempArrowLine);
+        tempArrowStartLatLng = null;
+        tempArrowLine = null;
+    }
+}
+
+// Расчет направления между двумя точками
+function calculateBearing(lat1, lng1, lat2, lng2) {
+    const dLng = (lng2 - lng1) * Math.PI / 180;
+    const lat1Rad = lat1 * Math.PI / 180;
+    const lat2Rad = lat2 * Math.PI / 180;
+    
+    const y = Math.sin(dLng) * Math.cos(lat2Rad);
+    const x = Math.cos(lat1Rad) * Math.sin(lat2Rad) -
+              Math.sin(lat1Rad) * Math.cos(lat2Rad) * Math.cos(dLng);
+    
+    let bearing = Math.atan2(y, x) * 180 / Math.PI;
+    bearing = (bearing + 360) % 360;
+    
+    return bearing;
+}
+
+// Инициализация при загрузке страницы
 document.addEventListener('DOMContentLoaded', function() {
+    console.log("DOM завантажено, ініціалізація додатка...");
     initApp();
 });
 
-// Глобальні функції для виклику з HTML
-window.addTargetAtCenter = addTargetAtCenter;
-window.toggleTrajectories = toggleTrajectories;
-window.toggleClustering = toggleClustering;
-window.toggleArrowMode = toggleArrowMode;
-window.clearAllTargets = clearAllTargets;
-window.exportTargets = exportTargets;
-window.importTargets = importTargets;
-window.togglePanel = togglePanel;
-window.enableAddTargetMode = enableAddTargetMode;
-window.editTarget = editTarget;
-window.deleteTarget = deleteTarget;
-window.saveTargetEdit = saveTargetEdit;
-window.closeEditModal = closeEditModal;
-window.showCourseSelectionModal = showCourseSelectionModal;
-window.confirmCourseSelection = confirmCourseSelection;
-window.cancelCourseSelection = cancelCourseSelection;
-window.setTargetCourseFromMap = setTargetCourseFromMap;
+// Очистка при закрытии страницы
+window.addEventListener('beforeunload', function() {
+    if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+    }
+    if (autoSaveInterval) {
+        clearInterval(autoSaveInterval);
+    }
+    if (syncInterval) {
+        clearInterval(syncInterval);
+    }
+    saveTargets();
+});
+
+// Обработка ошибок
+window.addEventListener('error', function(e) {
+    console.error('Глобальна помилка:', e.error);
+});
+
+// Service Worker для офлайн-работы (если нужно)
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register('/sw.js').catch(function(error) {
+        console.log('Service Worker реєстрація не вдалась:', error);
+    });
+}
 </script>
 </body>
 </html>
