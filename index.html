@@ -1222,6 +1222,7 @@ function syncWithFirebase() {
 // Додати ціль в конкретній позиції
 function addTargetAtPosition(latlng) {
     console.log("Додавання цілі на позицію:", latlng);
+    console.log("Ціль успішно додана:", target.name, "ID:", target.id);
     
     if (!isAdmin) {
         alert('Лише адміністратор може додавати цілі');
