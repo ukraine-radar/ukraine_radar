@@ -1099,9 +1099,11 @@ function loadFromFirebase() {
     }
 }
 
-// Об'єднати цілі з Firebase
+// Об'єднати цілі з Firebase - ИСПРАВЛЕННАЯ ВЕРСИЯ
 function mergeTargetsFromFirebase(firebaseTargets) {
     const firebaseTargetsArray = Object.values(firebaseTargets);
+    
+    console.log("Мердж цілей з Firebase:", firebaseTargetsArray.length);
     
     // Добавляем новые цели из Firebase (кроме удаленных)
     firebaseTargetsArray.forEach(firebaseTarget => {
@@ -1110,19 +1112,53 @@ function mergeTargetsFromFirebase(firebaseTargets) {
         }
         
         const existingTarget = targets.find(t => t.id === firebaseTarget.id);
+        
         if (!existingTarget) {
-            // Новая цель - добавляем полную историю
+            // Новая цель - добавляем
+            console.log("Додано нову ціль з Firebase:", firebaseTarget.name);
             targets.push(firebaseTarget);
-            console.log("Додано ціль з Firebase:", firebaseTarget.name);
             
             // Создаем маркер и траекторию
             addTargetToMap(firebaseTarget);
+            
         } else if (firebaseTarget.updatedAt > existingTarget.updatedAt) {
             // Обновляем существующую цель если она новее
+            console.log("Оновлено ціль з Firebase:", firebaseTarget.name);
+            
+            // Сохраняем текущую позицию маркера
+            const currentPosition = markers[firebaseTarget.id] ? 
+                markers[firebaseTarget.id].getLatLng() : null;
+            
+            // Обновляем данные цели
             Object.assign(existingTarget, firebaseTarget);
+            
+            // Восстанавливаем позицию если маркер существует
+            if (markers[existingTarget.id] && currentPosition) {
+                markers[existingTarget.id].setLatLng(currentPosition);
+            }
             
             // Обновляем маркер
             updateMarkerRotation(existingTarget);
+        }
+    });
+    
+    // Удаляем цели которые есть локально но нет в Firebase
+    targets.forEach((target, index) => {
+        if (!deletedTargets.has(target.id) && !firebaseTargets[target.id]) {
+            console.log("Видаляємо локальну ціль, якої немає в Firebase:", target.name);
+            deletedTargets.add(target.id);
+            targets.splice(index, 1);
+            
+            if (markers[target.id]) {
+                if (isClusteringEnabled) {
+                    markerCluster.removeLayer(markers[target.id]);
+                } else {
+                    individualTargets.removeLayer(markers[target.id]);
+                }
+                delete markers[target.id];
+            }
+            removeTrajectory(target.id);
+            delete targetHistory[target.id];
         }
     });
     
