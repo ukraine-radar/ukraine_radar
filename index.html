@@ -935,7 +935,7 @@ function startAutoSave() {
     }, 5000);
 }
 
-// Оптимизированная синхронизация с Firebase
+// Оптимизированная синхронизация с Firebase - ИСПРАВЛЕННАЯ ВЕРСИЯ
 function startAutoSync() {
     lastSyncTargets = JSON.stringify(targets);
     lastSyncDeleted = JSON.stringify(Array.from(deletedTargets));
@@ -948,13 +948,14 @@ function startAutoSync() {
         
         // Синхронизируем только если были изменения
         if (currentTargets !== lastSyncTargets || currentDeleted !== lastSyncDeleted) {
+            console.log("Виявлено зміни, синхронізую з Firebase...");
             syncWithFirebase();
             lastSyncTargets = currentTargets;
             lastSyncDeleted = currentDeleted;
         }
         
-        // Загружаем обновления реже - каждые 5 секунд
-        if (Date.now() - lastSyncTime > 5000) {
+        // Загружаем обновления каждые 3 секунды
+        if (Date.now() - lastSyncTime > 3000) {
             loadFromFirebase();
             lastSyncTime = Date.now();
         }
