@@ -969,7 +969,7 @@ function debouncedSave() {
     }, 1000);
 }
 
-// Настройка слушателей Firebase
+// Настройка слушателей Firebase - ИСПРАВЛЕННАЯ ВЕРСИЯ
 function setupRealtimeListeners() {
     if (!isOnline) return;
     
@@ -977,9 +977,8 @@ function setupRealtimeListeners() {
         const db = firebase.database();
         const targetsRef = db.ref('targets');
         const deletedRef = db.ref('deletedTargets');
-        const historyRef = db.ref('targetHistory');
         
-        // Слушатель изменений целей
+        // Слушатель изменений целей - ИСПРАВЛЕНО
         targetsRef.on('value', (snapshot) => {
             const firebaseTargets = snapshot.val() || {};
             
@@ -989,11 +988,11 @@ function setupRealtimeListeners() {
                 return;
             }
             
-            console.log("Отримано оновлення з Firebase");
+            console.log("Отримано оновлення цілей з Firebase:", Object.keys(firebaseTargets).length);
             mergeTargetsFromFirebase(firebaseTargets);
         });
         
-        // Слушатель удаленных целей
+        // Слушатель удаленных целей - ИСПРАВЛЕНО
         deletedRef.on('value', (snapshot) => {
             const firebaseDeleted = snapshot.val() || [];
             
@@ -1024,25 +1023,6 @@ function setupRealtimeListeners() {
             });
         });
         
-        // Слушатель истории траекторий
-        historyRef.on('value', (snapshot) => {
-            const firebaseHistory = snapshot.val() || {};
-            
-            // Обновляем историю траекторий
-            Object.keys(firebaseHistory).forEach(targetId => {
-                if (!deletedTargets.has(targetId)) {
-                    targetHistory[targetId] = firebaseHistory[targetId];
-                    
-                    // Обновляем траекторию на карте
-                    if (showTrajectories && polylines[targetId]) {
-                        polylines[targetId].setLatLngs(
-                            targetHistory[targetId].map(point => [point.lat, point.lng])
-                        );
-                    }
-                }
-            });
-        });
-        
         // Лічильник онлайн-користувачів
         const usersRef = db.ref('onlineUsers');
         const userRef = usersRef.push();
@@ -1065,6 +1045,7 @@ function setupRealtimeListeners() {
             
             document.getElementById('onlineUsers').textContent = `Онлайн: ${activeUsers.length}`;
         });
+        
     } catch (error) {
         console.error('Помилка Firebase:', error);
         isOnline = false;
