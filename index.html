@@ -1167,7 +1167,7 @@ function mergeTargetsFromFirebase(firebaseTargets) {
     updateTargetsList();
 }
 
-// Синхронизировать с Firebase
+// Синхронизировать с Firebase - ИСПРАВЛЕННАЯ ВЕРСИЯ
 function syncWithFirebase() {
     if (!isOnline || isSyncing) return;
     
@@ -1177,7 +1177,6 @@ function syncWithFirebase() {
         const db = firebase.database();
         const targetsRef = db.ref('targets');
         const deletedRef = db.ref('deletedTargets');
-        const historyRef = db.ref('targetHistory');
         
         // Фильтруем удаленные цели
         const activeTargets = targets.filter(target => !deletedTargets.has(target.id));
@@ -1188,46 +1187,29 @@ function syncWithFirebase() {
             targetsObject[target.id] = target;
         });
         
-        // Синхронизируем цели
+        console.log("Синхронізація з Firebase:", activeTargets.length + " цілей");
+        
+        // Синхронизируем цели - ИСПРАВЛЕНО: используем set вместо update
         targetsRef.set(targetsObject)
             .then(() => {
-                console.log("Дані цілей синхронізовані з Firebase");
+                console.log("Дані цілей успішно синхронізовані з Firebase");
+                
+                // Синхронизируем удаленные цели
+                const deletedArray = Array.from(deletedTargets);
+                return deletedRef.set(deletedArray);
+            })
+            .then(() => {
+                console.log("Видалені цілі успішно синхронізовані з Firebase");
             })
             .catch((error) => {
-                console.error("Помилка синхронізації цілей:", error);
+                console.error("Помилка синхронізації з Firebase:", error);
                 isOnline = false;
                 updateStatus();
-            });
-            
-        // Синхронизируем удаленные цели
-        const deletedArray = Array.from(deletedTargets);
-        deletedRef.set(deletedArray)
-            .then(() => {
-                console.log("Видалені цілі синхронізовані з Firebase");
-            })
-            .catch((error) => {
-                console.error("Помилка синхронізації видалених цілей:", error);
-            });
-            
-        // Синхронизируем только изменения в истории
-        const historyChanges = {};
-        Object.keys(targetHistory).forEach(targetId => {
-            if (!deletedTargets.has(targetId)) {
-                // Берем больше точек траектории для синхронизации
-                historyChanges[targetId] = targetHistory[targetId].slice(-50);
-            }
-        });
-
-        historyRef.update(historyChanges)
-            .then(() => {
-                console.log("Історія траєкторій синхронізована з Firebase");
-            })
-            .catch((error) => {
-                console.error("Помилка синхронізації історії траєкторій:", error);
             })
             .finally(() => {
                 isSyncing = false;
             });
+            
     } catch (error) {
         console.error("Помилка Firebase:", error);
         isOnline = false;
