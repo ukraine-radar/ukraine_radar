@@ -839,3 +839,114 @@
 </div>
 
 <input type="file" id="importFile" style="display: none;" accept=".json">
+    <script>
+// Глобальные переменные
+let map;
+let targets = [];
+let markers = {};
+let polylines = {};
+let targetHistory = {};
+let isOnline = false;
+let showTrajectories = true;
+let isPanelExpanded = true;
+let isCourseSelectionMode = false;
+let selectedTargetForCourse = null;
+let autoSaveInterval = null;
+let isAdmin = false;
+let currentEditTargetId = null;
+let isSyncing = false;
+let lastSyncTime = Date.now();
+let saveTimeout = null;
+let lastUpdateTime = Date.now();
+let animationFrameId = null;
+let userSessionId = Math.random().toString(36).substring(2, 11);
+let syncInterval = null;
+let isAddTargetMode = false;
+let popupOpenTargetId = null;
+let deletedTargets = new Set();
+let markerCluster;
+let lastStatsUpdate = Date.now();
+let lastSyncTargets = '';
+let lastSyncDeleted = '';
+let pausedTargets = new Set();
+
+// Переменные для поиска
+let searchMarker = null;
+let searchResults = [];
+let searchTimeout = null;
+
+// Переменные для функционала стрелок и кластеризации
+let isClusteringEnabled = true;
+let arrowMode = false;
+let tempArrowLine = null;
+let tempArrowStartLatLng = null;
+let allArrows = L.layerGroup();
+let individualTargets = L.layerGroup();
+
+// Текущий стиль карты
+let currentMapStyle = 'dark';
+
+// Слои карты
+let baseLayers = {
+    'dark': null,
+    'standard': null,
+    'satellite': null
+};
+
+// Конфигурация иконок для разных стилей карты
+const iconConfig = {
+    'dark': {
+        'дрон': "icons/shahed.png",
+        'ракета': "icons/raketa.png",
+        'винищувач': "icons/suchka.png",
+        'бомба': "icons/KAB.png",
+        'корабль': "icons/ship.png",
+        'вертоліт': "icons/vertolet.png",
+        'пускова установка': "icons/iskander.png",
+        'група бпла': "icons/group.png",
+        'розвідник': "icons/razvedka.png",
+        'невідома ціль': "icons/nevidoma.png"
+    },
+    'standard': {
+        'дрон': "icons/shahed.png",
+        'ракета': "icons/raketa.png",
+        'винищувач': "icons/suchka.png",
+        'бомба': "icons/KAB.png",
+        'корабль': "icons/ship.png",
+        'вертоліт': "icons/vertolet.png",
+        'пускова установка': "icons/iskander.png",
+        'група бпла': "icons/group.png",
+        'розвідник': "icons/razvedka.png",
+        'невідома ціль': "icons/nevidoma.png"
+    },
+    'satellite': {
+        'дрон': "icons/shahed.png",
+        'ракета': "icons/raketa.png",
+        'винищувач': "icons/suchka.png",
+        'бомба': "icons/KAB.png",
+        'корабль': "icons/ship.png",
+        'вертоліт': "icons/vertolet.png",
+        'пускова установка': "icons/iskander.png",
+        'група бпла': "icons/group.png",
+        'розвідник': "icons/razvedka.png",
+        'невідома ціль': "icons/nevidoma.png"
+    }
+};
+
+// База данных всех населенных пунктов Украины
+const ukraineCities = [
+    { name: "Київ", lat: 50.4501, lng: 30.5234, type: "столиця" },
+    { name: "Харків", lat: 49.9935, lng: 36.2304, type: "обласний центр" },
+    { name: "Одеса", lat: 46.4825, lng: 30.7233, type: "обласний центр" },
+    { name: "Дніпро", lat: 48.4647, lng: 35.0462, type: "обласний центр" },
+    { name: "Львів", lat: 49.8397, lng: 24.0297, type: "обласний центр" },
+    { name: "Запоріжжя", lat: 47.8388, lng: 35.1396, type: "місто" },
+    { name: "Бердянськ", lat: 46.7590, lng: 36.7884, type: "місто" },
+    { name: "Мелітополь", lat: 46.8480, lng: 35.3653, type: "місто" },
+    { name: "Кривий Ріг", lat: 47.9105, lng: 33.3918, type: "місто" },
+    { name: "Миколаїв", lat: 46.9750, lng: 31.9946, type: "обласний центр" }
+];
+
+// ВАШІ НАЛАШТУВАННЯ FIREBASE
+const firebaseConfig = {
+    apiKey: "AIzaSyCXB-klf
