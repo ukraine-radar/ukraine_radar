@@ -637,6 +637,9 @@
                 </button>
                 <button class="btn btn-secondary btn-margin" onclick="importTargets()">
                     <i class="fas fa-upload"></i>Імпорт
+                    <button class="btn btn-danger btn-margin" onclick="clearLocalStorage()">
+                        <i class="fas fa-trash-alt"></i>Очистити локальне сховище
+                    </button>
                 </button>
             </div>
         </div>
@@ -960,6 +963,17 @@ function debouncedSave() {
     saveTimeout = setTimeout(() => {
         saveTargets();
     }, 1000);
+}
+
+// Очистка локальных целей
+function clearLocalStorage() {
+    if (confirm('Ви впевнені, що хочете повністю очистити локальне сховище? Всі дані будуть втрачені!')) {
+        localStorage.removeItem('airTargets');
+        localStorage.removeItem('airTargetsHistory');
+        localStorage.removeItem('deletedTargets');
+        alert('Локальне сховище очищено!');
+        location.reload();
+    }
 }
 
 // Настройка слушателей Firebase
