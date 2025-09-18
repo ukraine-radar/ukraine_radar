@@ -914,6 +914,22 @@ let tempArrowStartLatLng = null;
 let allArrows = L.layerGroup();
 let individualTargets = L.layerGroup();
 
+// Текущий стиль карты
+let currentMapStyle = 'dark';
+
+// Слои карты
+let baseLayers = {
+    'dark': null,
+    'standard': null,
+    'satellite': null
+};
+
+// Закрыть предупреждение
+function closeWarningModal() {
+    document.getElementById('warningModal').style.display = 'none';
+    localStorage.setItem('warningShown', 'true');
+}
+
 // Обход CORS для разработки
 const originalFetch = window.fetch;
 window.fetch = function(...args) {
@@ -923,16 +939,6 @@ window.fetch = function(...args) {
         args[1].credentials = 'omit';
     }
     return originalFetch.apply(this, args);
-};
-
-// Текущий стиль карты
-let currentMapStyle = 'dark';
-
-// Слои карты
-let baseLayers = {
-    'dark': null,
-    'standard': null,
-    'satellite': null
 };
 
 // Конфигурация иконок для разных стилей карты
@@ -978,12 +984,6 @@ const iconConfig = {
 // Функция для получения URL иконки цели с учетом текущего стиля карты
 function getTargetIconUrl(type) {
     return iconConfig[currentMapStyle][type] || iconConfig['dark'][type];
-}
-
-// Закрыть предупреждение - если этой функции нет
-function closeWarningModal() {
-    document.getElementById('warningModal').style.display = 'none';
-    localStorage.setItem('warningShown', 'true');
 }
 
 // База данных всех населенных пунктов Украины
@@ -1404,9 +1404,10 @@ function initMap() {
 
         // СПУТНИКОВАЯ КАРТА с названиями
         const satelliteBase = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
-    attribution: 'Tiles &copy; Esri',
-    crossOrigin: true  // ← ДОБАВЬТЕ ЭТО
-}); {
+    attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
+    maxZoom: 19,  // ← Проверьте что перед этим есть запятая!
+    crossOrigin: true
+});
             attribution: 'Tiles &copy; Esri &mdash; Source: Esri, i-cubed, USDA, USGS, AEX, GeoEye, Getmapping, Aerogrid, IGN, IGP, UPR-EGP, and the GIS User Community',
             maxZoom: 19
         });
