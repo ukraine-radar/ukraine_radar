@@ -1703,6 +1703,18 @@
     0%, 100% { transform: translate(-50%, 0); }
     50% { transform: translate(-50%, -10px); }
 }
+
+/* UI UPDATE: Ripple animation for touch feedback */
+@keyframes ripple {
+    0% {
+        transform: scale(0);
+        opacity: 1;
+    }
+    100% {
+        transform: scale(4);
+        opacity: 0;
+    }
+}
         }
     </style>
 </head>
@@ -3931,6 +3943,86 @@ function setupEventListeners() {
             };
             reader.readAsText(file);
         }
+    });
+
+    // UI UPDATE: Mobile swipe gestures for panel
+    let touchStartY = 0;
+    let touchEndY = 0;
+    let isPanelDragging = false;
+    const panel = document.getElementById('sidePanel');
+    
+    if (panel && window.innerWidth <= 768) {
+        panel.addEventListener('touchstart', function(e) {
+            touchStartY = e.touches[0].clientY;
+            isPanelDragging = true;
+        }, { passive: true });
+        
+        panel.addEventListener('touchmove', function(e) {
+            if (!isPanelDragging) return;
+            touchEndY = e.touches[0].clientY;
+            const deltaY = touchEndY - touchStartY;
+            
+            // Allow dragging down to collapse
+            if (deltaY > 0 && !panel.classList.contains('collapsed')) {
+                e.preventDefault();
+                const newHeight = Math.max(50, panel.offsetHeight - deltaY);
+                panel.style.height = newHeight + 'px';
+            }
+            // Allow dragging up to expand
+            else if (deltaY < 0 && panel.classList.contains('collapsed')) {
+                e.preventDefault();
+                panel.classList.remove('collapsed');
+                panel.style.height = '300px';
+            }
+        }, { passive: false });
+        
+        panel.addEventListener('touchend', function(e) {
+            if (!isPanelDragging) return;
+            isPanelDragging = false;
+            
+            const deltaY = touchEndY - touchStartY;
+            
+            // Swipe down - collapse
+            if (deltaY > 50 && !panel.classList.contains('collapsed')) {
+                togglePanel();
+            }
+            // Swipe up - expand
+            else if (deltaY < -50 && panel.classList.contains('collapsed')) {
+                togglePanel();
+            }
+            // Reset height if not collapsed
+            else if (!panel.classList.contains('collapsed')) {
+                panel.style.height = '300px';
+            }
+        }, { passive: true });
+    }
+    
+    // UI UPDATE: Add touch ripple effect to buttons
+    const buttons = document.querySelectorAll('.btn, .header-btn, .mobile-select-btn, .group-btn');
+    buttons.forEach(button => {
+        button.addEventListener('touchstart', function(e) {
+            const ripple = document.createElement('span');
+            const rect = this.getBoundingClientRect();
+            const size = Math.max(rect.width, rect.height);
+            const x = e.touches[0].clientX - rect.left - size / 2;
+            const y = e.touches[0].clientY - rect.top - size / 2;
+            
+            ripple.style.width = ripple.style.height = size + 'px';
+            ripple.style.left = x + 'px';
+            ripple.style.top = y + 'px';
+            ripple.style.position = 'absolute';
+            ripple.style.borderRadius = '50%';
+            ripple.style.background = 'rgba(0, 188, 212, 0.5)';
+            ripple.style.transform = 'scale(0)';
+            ripple.style.animation = 'ripple 0.6s ease-out';
+            ripple.style.pointerEvents = 'none';
+            
+            this.style.position = 'relative';
+            this.style.overflow = 'hidden';
+            this.appendChild(ripple);
+            
+            setTimeout(() => ripple.remove(), 600);
+        }, { passive: true });
     });
 
     console.log("Обробники подій успішно налаштовані");
